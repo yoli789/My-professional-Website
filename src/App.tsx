@@ -537,7 +537,7 @@ const CaseStudies = () => {
     {
       title: t("Indirect procurement dashboard", "间接采购仪表盘"),
       icon: <Database className="text-corporate-blue" size={24} />,
-      image: "/automation/project_dashboard.png",
+      image: "/procurement_dashboard_feature.jpg",
       description: t("Architected comprehensive procurement dashboards to monitor target-to-actual savings and evaluate contractual performance metrics, ensuring full visibility into indirect spend efficiency.", "构建综合的采购仪表盘，监控目标与实际节省额的对比，并评估合同绩效指标，确保间接采购效率的充分可视化。"),
       tags: [t("Supplier Management", "供应商管理"), t("KPI design", "KPI设计")],
       demoPath: "/demo/procurement-dashboard"
