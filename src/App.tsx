@@ -1080,7 +1080,7 @@ const ProcessAutomationDemo = () => {
             >
               {[
                 { 
-                  src: "/automation/frontend_input.png", 
+                  src: "/automation/frontend_input_final.png", 
                   title: t("User-Friendly Interface", "前端输入：用户友好界面"),
                   subtitle: t("Designing intuitive management interfaces for seamless data transmission to back-end databases.", "设计 user friendly 管理界面，用于将数据传送到后端数据库。")
                 },
@@ -1101,7 +1101,7 @@ const ProcessAutomationDemo = () => {
                 }
               ].concat([
                 { 
-                  src: "/automation/frontend_input.png", 
+                  src: "/automation/frontend_input_final.png", 
                   title: t("User-Friendly Interface", "前端输入：用户友好界面"),
                   subtitle: t("Designing intuitive management interfaces for seamless data transmission to back-end databases.", "设计 user friendly 管理界面，用于将数据传送到后端数据库。")
                 },
