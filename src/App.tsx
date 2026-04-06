@@ -578,7 +578,7 @@ const CaseStudies = () => {
                   </div>
                 )}
               </div>
-              <div className="p-8 flex-grow">
+              <div className="p-8 flex-1 flex flex-col">
                 <div className="flex gap-2 mb-4">
                   {project.tags.map(tag => (
                     <span key={tag} className="text-[10px] uppercase tracking-wider font-bold text-gray-400 border border-gray-200 px-2 py-1 rounded">
@@ -587,10 +587,10 @@ const CaseStudies = () => {
                   ))}
                 </div>
                 <h4 className="text-xl font-bold mb-4 leading-tight">{project.title}</h4>
-                <p className="text-gray-600 text-sm mb-8 leading-relaxed">
+                <p className="text-gray-600 text-sm leading-relaxed flex-1">
                   {project.description}
                 </p>
-                <div className="mt-auto flex gap-10">
+                <div className="mt-8 flex gap-10">
                   <button className="text-[11px] font-bold uppercase tracking-[0.15em] text-[#0055ff] flex items-center gap-1 group/btn transition-all">
                     CASE STUDY <ArrowRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
                   </button>
