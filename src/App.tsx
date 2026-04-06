@@ -1401,88 +1401,56 @@ const ProcurementDashboardDemo = () => {
               <p className="text-sm text-gray-500 mb-6">{t("Developed data transformation formulas to bridge cross-system metadata discrepancies, facilitating a single source of truth within Power BI through data normalization.", "开发数据清洗转换规则从而调和跨系统元数据差异，最终在 Power BI 内规范统一实现 Single Source of Truth（单一事实来源）。")}</p>
               <div className="bg-gray-900 p-4 rounded-xl font-mono text-[10px] text-blue-300 overflow-x-auto">
                 <pre>
-                  {`Final ABB =
- 
+                  {`Final Name =
 VAR L1 = 'Project CSV'[Reference level 1]
-VAR L2 = 'Project CSV'[Reference level 2]
-VAR L3 = 'Project CSV'[Reference level 3]
- 
+
 VAR TaxonomyCM =
     CALCULATE (
-        SELECTEDVALUE ( 'Reference_VF'[ABB] ),
-        FILTER (
-            'Reference_VF',
-            ( ISBLANK ( L1 ) || 'Reference_VF'[CategoryL1] = L1 ) &&
-            ( ISBLANK ( L2 ) || 'Reference_VF'[CategoryL2] = L2 ) &&
-            ( ISBLANK ( L3 ) || 'Reference_VF'[CategoryL3] = L3 )
-        )
+        SELECTEDVALUE ( 'Reference'[Name] ),
+        KEEPFILTERS ( 'Reference'[CategoryL1] = L1 || ISBLANK ( L1 ) )
     )
- 
+
 VAR IsInvalidTaxonomyCM =
     ISBLANK ( TaxonomyCM ) ||
     TaxonomyCM = "NDY" ||
     CONTAINSSTRING ( TaxonomyCM, ";" )
- 
-VAR RawName =
-    IF (
-        IsInvalidTaxonomyCM,
-        'Project CSV'[ABB.1],
-        TaxonomyCM
-    )
- 
-VAR CleanUpper = UPPER(TRIM(RawName))
- 
-VAR DotPos = SEARCH(".", CleanUpper, 1, 0)
-VAR CommaPos = SEARCH(",", CleanUpper, 1, 0)
- 
-VAR HasDot = DotPos > 0
-VAR HasComma = CommaPos > 0
- 
+
+VAR RawName = IF ( IsInvalidTaxonomyCM, 'Project CSV'[Name.1], TaxonomyCM )
+VAR CleanUpper = UPPER ( TRIM ( RawName ) )
+
+VAR DotPos = SEARCH ( ".", CleanUpper, 1, 0 )
+VAR CommaPos = SEARCH ( ",", CleanUpper, 1, 0 )
+
 VAR FirstName =
-    SWITCH(
-        TRUE(),
-        HasDot, LEFT(CleanUpper, DotPos - 1),
-        HasComma, MID(CleanUpper, CommaPos + 2, LEN(CleanUpper)),
+    SWITCH (
+        TRUE (),
+        DotPos > 0,   TRIM ( LEFT ( CleanUpper, DotPos - 1 ) ),
+        CommaPos > 0, TRIM ( MID ( CleanUpper, CommaPos + 1, LEN ( CleanUpper ) ) ),
         CleanUpper
     )
- 
-VAR SpacePos = SEARCH(" ", FirstName, 1, 0)
- 
-VAR FirstNameOnly =
-    IF(
-        SpacePos > 0,
-        LEFT(FirstName, SpacePos - 1),
-        FirstName
-    )
- 
+
 VAR LastNameRaw =
-    SWITCH(
-        TRUE(),
-        HasDot, MID(CleanUpper, DotPos + 1, LEN(CleanUpper)),
-        HasComma, LEFT(CleanUpper, CommaPos - 1),
-        BLANK()
+    SWITCH (
+        TRUE (),
+        DotPos > 0,   TRIM ( MID ( CleanUpper, DotPos + 1, LEN ( CleanUpper ) ) ),
+        CommaPos > 0, TRIM ( LEFT ( CleanUpper, CommaPos - 1 ) ),
+        BLANK ()
     )
- 
-/* -------- ${t("NORMALIZE LAST NAME", "规范化姓氏")} -------- */
- 
+
+VAR SpacePos = SEARCH ( " ", FirstName, 1, 0 )
+VAR FirstNameOnly = IF ( SpacePos > 0, LEFT ( FirstName, SpacePos - 1 ), FirstName )
+
 VAR LastName =
-    VAR NoSpaces = SUBSTITUTE(LastNameRaw, " ", "") -- ${t("This removes all spaces for comparison", "移除所有空格以便进行比对")}
+    VAR NoSpaces = SUBSTITUTE ( LastNameRaw, " ", "" ) -- ${t("This removes all spaces for comparison", "移除所有空格以便进行比对")}
     RETURN
-        SWITCH(
-            TRUE(),
-            -- ${t("Updated logic: If the name is detected (with or without spaces), return the version with NO spaces", "更新逻辑：若检测到姓名（无论是否有空格），返回无空格版本")}
-            NoSpaces = "People Name", "PEOPLENAME",
- 
-            -- fallback
-            LastNameRaw
-        )
- 
+        IF ( NoSpaces = "PEOPLENAME", "PEOPLENAME", LastNameRaw )
+
 RETURN
-IF(
-    NOT ISBLANK(LastName),
-    LastName & ", " & FirstNameOnly,
-    CleanUpper
-)
+    IF (
+        NOT ISBLANK ( LastName ),
+        LastName & ", " & FirstNameOnly,
+        CleanUpper
+    )
 // ${t("For reference only", "仅供参考")}`}
                 </pre>
               </div>
