@@ -1265,7 +1265,7 @@ const ProcurementDashboardDemo = () => {
             <div className="flex-1 w-full bg-gray-50 p-4 rounded-3xl border border-gray-100 relative overflow-hidden group">
               <div className="relative rounded-2xl overflow-hidden bg-gray-100 min-h-[300px] flex items-center justify-center">
                 <motion.img
-                  src="/pareto-analysis.png"
+                  src="/dashboards/spend_pareto_final.png"
                   alt="Spend Pareto Analysis Report"
                   className="w-full h-auto shadow-sm"
                   initial={{ opacity: 0, scale: 0.95 }}
@@ -1275,7 +1275,7 @@ const ProcurementDashboardDemo = () => {
                 />
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all flex items-center justify-center">
                   <button
-                    onClick={() => window.open('/pareto-analysis.png', '_blank')}
+                    onClick={() => window.open('/dashboards/spend_pareto_final.png', '_blank')}
                     className="bg-corporate-blue text-white px-6 py-3 rounded-full text-xs font-bold uppercase tracking-widest shadow-2xl transform translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all flex items-center gap-2 hover:bg-blue-700 active:scale-95"
                   >
                     <ExternalLink size={14} /> {t('Click to expand', '点击放大')}
