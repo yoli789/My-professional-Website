@@ -590,15 +590,15 @@ const CaseStudies = () => {
                 <p className="text-gray-600 text-sm mb-8 leading-relaxed">
                   {project.description}
                 </p>
-                <div className="mt-auto flex gap-4">
-                  <button className="text-xs font-bold uppercase tracking-widest text-corporate-blue flex items-center gap-1 hover:gap-2 transition-all">
-                    {t('Case Study', '案例研究')} <ArrowRight size={14} />
+                <div className="mt-auto flex gap-6">
+                  <button className="text-[10px] font-bold uppercase tracking-[0.15em] text-corporate-blue flex items-center gap-1 group/btn transition-all">
+                    {t('CASE STUDY', 'CASE STUDY')} <ArrowRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
                   </button>
                   <Link
                     to={project.demoPath}
-                    className="text-xs font-bold uppercase tracking-widest text-gray-400 hover:text-black transition-colors"
+                    className="text-[10px] font-bold uppercase tracking-[0.15em] text-gray-400 hover:text-black transition-colors"
                   >
-                    {t('View Demo', '查看演示')}
+                    {t('VIEW DEMO', 'VIEW DEMO')}
                   </Link>
                 </div>
               </div>
@@ -1359,25 +1359,25 @@ const ProcurementDashboardDemo = () => {
           <div className="flex flex-col md:flex-row gap-12 items-center">
             <div className="flex-1">
               <div className="inline-flex items-center gap-2 px-3 py-1 bg-corporate-blue/10 text-corporate-blue rounded-full text-xs font-bold uppercase tracking-widest mb-4">
-                <ShieldAlert size={14} /> {t("Case 3: Complex Data Prediction", "案例3:复杂数据预测")}
+                <ShieldAlert size={14} /> {t("Case 3: Complex Data Prediction", "案例3:发动机生产预估")}
               </div>
-              <h3 className="text-3xl font-bold mb-4 font-display">{t("Risk Prediction: Container Logistics", "风险预测：货运箱储物流")}</h3>
+              <h3 className="text-3xl font-bold mb-4 font-display">{t("Risk Prediction: Engine Program Forecast", "风险预测：发动机项目预估")}</h3>
               <p className="text-gray-600 leading-relaxed text-lg">
-                {t("Utilizing historical shipment data fused with macro-economic indicators to forecast container pricing and lead times. This allows supply chain directors to secure contracts ahead of inflationary market spikes.", "利用过往货运数据并融合宏观经济指标以预测未来货柜定价和交货时间。该雷达工具完美支持了供应链总监在通胀攀升前优先以远低于市场溢价的成本提前锁定合同以保障业务供应。")}
+                {t("Utilizing historical engine data fused with supply chain indicators to forecast program lead times and inventory requirements. This tool enables production directors to secure critical components ahead of manufacturing bottlenecks.", "利用过往发动机数据并融合供应链指标，以预测项目交货时间和库存需求。该工具支持生产总监在制造瓶颈出现前提前锁定关键零部件。")}
               </p>
             </div>
             <div className="flex-1 w-full bg-gray-50 p-4 rounded-3xl border border-gray-100 relative overflow-hidden group">
               <div className="relative rounded-2xl overflow-hidden bg-gray-100 min-h-[300px] flex items-center justify-center">
                 <motion.img
-                  src="/container-forecast.png"
-                  alt="Logistics Spend Forecast Report"
+                  src="/dashboards/risk_prediction_final.png"
+                  alt="Engine Program Forecast Report"
                   className="w-full h-auto shadow-sm"
                   initial={{ opacity: 0, scale: 0.95 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
                   referrerPolicy="no-referrer"
                 />
-                <PrivacyPatch imageSrc="/container-forecast.png" />
+                <PrivacyPatch imageSrc="/dashboards/risk_prediction_final.png" />
               </div>
             </div>
           </div>
