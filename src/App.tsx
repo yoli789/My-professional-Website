@@ -1314,7 +1314,7 @@ const ProcurementDashboardDemo = () => {
                 .flex.gap-6::-webkit-scrollbar { display: none; }
               `}} />
                 {[
-                  { src: "/dashboards/contract_nego_dashboard.jpg", title: "Contract Nego File Dashboard ISC PWC" },
+                  { src: "/dashboards/contract_dashboard_design.png", title: "Contract Dashboard Design Framework" },
                   { src: "/dashboards/ontime_report_final.png", title: "Contract Nego File - On time Report" },
                   { src: "/automation/project_dashboard_final_v3.png", title: "Project Dashboard" }
                 ].map((item, idx) => (
