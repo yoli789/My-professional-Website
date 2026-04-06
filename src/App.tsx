@@ -590,15 +590,15 @@ const CaseStudies = () => {
                 <p className="text-gray-600 text-sm mb-8 leading-relaxed">
                   {project.description}
                 </p>
-                <div className="mt-auto flex gap-6">
-                  <button className="text-[10px] font-bold uppercase tracking-[0.15em] text-corporate-blue flex items-center gap-1 group/btn transition-all">
-                    {t('CASE STUDY', 'CASE STUDY')} <ArrowRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
+                <div className="mt-auto flex gap-10">
+                  <button className="text-[11px] font-bold uppercase tracking-[0.15em] text-[#0055ff] flex items-center gap-1 group/btn transition-all">
+                    CASE STUDY <ArrowRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
                   </button>
                   <Link
                     to={project.demoPath}
-                    className="text-[10px] font-bold uppercase tracking-[0.15em] text-gray-400 hover:text-black transition-colors"
+                    className="text-[11px] font-semibold uppercase tracking-[0.15em] text-slate-400 hover:text-black transition-colors"
                   >
-                    {t('VIEW DEMO', 'VIEW DEMO')}
+                    VIEW DEMO
                   </Link>
                 </div>
               </div>
