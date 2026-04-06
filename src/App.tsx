@@ -1495,12 +1495,13 @@ IF(
               </div>
               <h4 className="text-xl font-bold mb-4">{t("Dataflows & ETL", "数据流与 ETL 工具")}</h4>
               <p className="text-sm text-gray-500 mb-6">{t("Consolidating multi-source data (SAP, Ariba, Excel) through Power Query for automated cleansing.", "运用 Power Query 对多来源渠道数据（SAP, Ariba, Excel）执行自动清理。")}</p>
-              <div className="flex flex-wrap gap-2">
-                {['SAP Ariba', 'Excel', 'Worksheets', 'SAP ERP'].map(source => (
-                  <span key={source} className="px-2 py-1 bg-gray-100 rounded text-[8px] font-bold text-gray-500">{source}</span>
-                ))}
-                <div className="w-full flex justify-center my-2"><ArrowRight className="text-gray-300" size={12} /></div>
-                <div className="w-full py-2 bg-corporate-blue/10 rounded text-center text-[10px] font-bold text-corporate-blue">Power Query ETL</div>
+              <div className="relative mt-2 rounded-xl overflow-hidden bg-gray-50 border border-gray-100 p-2">
+                <img 
+                  src="/automation/etl_process_final.png" 
+                  alt="Power Query ETL Process" 
+                  className="w-full h-auto"
+                />
+                <PrivacyPatch imageSrc="/automation/etl_process_final.png" />
               </div>
             </div>
           </div>
