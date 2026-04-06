@@ -1315,7 +1315,7 @@ const ProcurementDashboardDemo = () => {
               `}} />
                 {[
                   { src: "/dashboards/contract_nego_dashboard.jpg", title: "Contract Nego File Dashboard ISC PWC" },
-                  { src: "/dashboards/ontime_report.jpg", title: "Contract Nego File - On time Report" },
+                  { src: "/dashboards/ontime_report_final.png", title: "Contract Nego File - On time Report" },
                   { src: "/automation/project_dashboard_final_v3.png", title: "Project Dashboard" }
                 ].map((item, idx) => (
                   <div key={idx} className="min-w-full md:min-w-[85%] snap-center shrink-0 flex flex-col gap-3">
