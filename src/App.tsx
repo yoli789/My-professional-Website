@@ -1369,15 +1369,15 @@ const ProcurementDashboardDemo = () => {
             <div className="flex-1 w-full bg-gray-50 p-4 rounded-3xl border border-gray-100 relative overflow-hidden group">
               <div className="relative rounded-2xl overflow-hidden bg-gray-100 min-h-[300px] flex items-center justify-center">
                 <motion.img
-                  src="/dashboards/risk_prediction_final.png"
-                  alt="Engine Program Forecast Report"
+                  src="/dashboards/risk_prediction_logic.png"
+                  alt="Engine Program Forecast Logic & Metrics"
                   className="w-full h-auto shadow-sm"
                   initial={{ opacity: 0, scale: 0.95 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
                   referrerPolicy="no-referrer"
                 />
-                <PrivacyPatch imageSrc="/dashboards/risk_prediction_final.png" />
+                <PrivacyPatch imageSrc="/dashboards/risk_prediction_logic.png" />
               </div>
             </div>
           </div>
