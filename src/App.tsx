@@ -1093,6 +1093,11 @@ const ProcessAutomationDemo = () => {
                   src: "/automation/project_dashboard_final_v3.png", 
                   title: t("Integrated Dashboards", "可视化报表：集成分析看板"),
                   subtitle: t("Linking database data to integrated cross-platform dashboards, breaking information silos.", "链接数据库的数据集成跨平台的 dashboard，打破信息孤岛。")
+                },
+                { 
+                  src: "/automation/savings_dashboard_final.png", 
+                  title: t("Strategic Performance Tracking", "可视化报表：战略执行追踪"),
+                  subtitle: t("Strategic cross-platform analytics for goal vs. actual performance tracking.", "战略级跨平台分析，实现“预算 vs 实际”目标的动态追踪。")
                 }
               ].concat([
                 { 
@@ -1109,6 +1114,11 @@ const ProcessAutomationDemo = () => {
                   src: "/automation/project_dashboard_final_v3.png", 
                   title: t("Integrated Dashboards", "可视化报表：集成分析看板"),
                   subtitle: t("Linking database data to integrated cross-platform dashboards, breaking information silos.", "链接数据库的数据集成跨平台的 dashboard，打破信息孤岛。")
+                },
+                { 
+                  src: "/automation/savings_dashboard_final.png", 
+                  title: t("Strategic Performance Tracking", "可视化报表：战略执行追踪"),
+                  subtitle: t("Strategic cross-platform analytics for goal vs. actual performance tracking.", "战略级跨平台分析，实现“预算 vs 实际”目标的动态追踪。")
                 }
               ]).map((item, idx) => (
                 <div key={idx} className="relative h-full aspect-video shrink-0 group">
