@@ -587,10 +587,10 @@ const CaseStudies = () => {
                   ))}
                 </div>
                 <h4 className="text-xl font-bold mb-4 leading-tight">{project.title}</h4>
-                <p className="text-gray-600 text-sm leading-relaxed flex-1">
+                <p className="text-gray-600 text-sm leading-relaxed">
                   {project.description}
                 </p>
-                <div className="mt-8 flex gap-10">
+                <div className="mt-auto pt-8 flex gap-10">
                   <button className="text-[11px] font-bold uppercase tracking-[0.15em] text-[#0055ff] flex items-center gap-1 group/btn transition-all">
                     CASE STUDY <ArrowRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
                   </button>
