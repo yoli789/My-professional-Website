@@ -35,6 +35,7 @@ import {
     Database,
     Workflow,
     Bot,
+    ChevronDown,
     ChevronLeft,
     ChevronRight,
     ExternalLink,
@@ -72,7 +73,18 @@ export const supabase = createClient(supabaseUrl, supabaseKey);
 const Navbar = () => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
     const { lang, setLang, t } = useLanguage();
+
+    useEffect(() => {
+        const handleClickOutside = () => {
+            if (activeDropdown) {
+                setActiveDropdown(null);
+            }
+        };
+        document.addEventListener('click', handleClickOutside, true);
+        return () => document.removeEventListener('click', handleClickOutside, true);
+    }, [activeDropdown]);
 
     useEffect(() => {
         const handleScroll = () => setIsScrolled(window.scrollY > 50);
@@ -84,7 +96,15 @@ const Navbar = () => {
         { name: t('About Me', '关于我'), href: '/#about' },
         { name: t('Project Gallery', '项目画廊'), href: '/#projects' },
         { name: t('Technical Skills', '技术能力'), href: '/#skills' },
-        { name: t('AI Lab', 'AI 实验室'), href: '/#ailab' },
+        { 
+            name: t('AI Lab', 'AI 实验室'), 
+            href: '/#ailab',
+            dropdownItems: [
+                { name: t('The latest AI Project', '最新 AI 项目'), href: '/ai-lab' },
+                { name: t('AI thoughts', 'AI 随想'), href: '/ai-lab' },
+                { name: t('Find a New idea', '发现新灵感'), href: '/ai-lab' }
+            ]
+        },
         { name: t('Contact', '总览与联系'), href: '/#contact' },
     ];
 
@@ -104,16 +124,49 @@ const Navbar = () => {
             <div className="max-w-7xl mx-auto px-6 md:px-12 flex justify-center items-center relative">
                 <div className="flex justify-between items-center w-full">
                     {/* Desktop Nav */}
-                    <div className="hidden md:flex space-x-6 whitespace-nowrap">
+                    <div className="hidden md:flex space-x-6 whitespace-nowrap items-center">
                         {navLinks.map((link) => (
-                            <Link
-                                key={link.name}
-                                to={link.href}
-                                onClick={(e) => handleNavClick(e, link.href)}
-                                className="text-sm font-medium hover:text-corporate-blue transition-colors"
-                            >
-                                {link.name}
-                            </Link>
+                            <div key={link.name} className="relative" onClick={(e) => e.stopPropagation()}>
+                                <Link
+                                    to={link.href}
+                                    onClick={(e) => {
+                                        if (link.dropdownItems) {
+                                            e.preventDefault();
+                                            setActiveDropdown(activeDropdown === link.name ? null : link.name);
+                                        } else {
+                                            handleNavClick(e, link.href);
+                                            setActiveDropdown(null);
+                                        }
+                                    }}
+                                    className={`text-sm font-medium transition-all duration-200 flex items-center gap-1 pb-1 border-b-2 ${activeDropdown === link.name ? 'border-black text-black' : 'border-transparent text-gray-700 hover:text-corporate-blue'}`}
+                                >
+                                    {link.name}
+                                    {link.dropdownItems && (
+                                        <ChevronDown size={14} className={`transition-transform duration-200 ${activeDropdown === link.name ? 'rotate-180' : ''}`} />
+                                    )}
+                                </Link>
+                                
+                                {link.dropdownItems && activeDropdown === link.name && (
+                                    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-4 w-56 bg-white rounded-xl shadow-xl border border-gray-100 py-3 flex flex-col items-start z-50">
+                                        <div className="w-full text-left px-4 pb-2 mb-2 border-b border-gray-50">
+                                            <span className="text-xs text-gray-400 font-medium tracking-wide">Explore</span>
+                                        </div>
+                                        {link.dropdownItems.map((item) => (
+                                            <Link
+                                                key={item.name}
+                                                to={item.href}
+                                                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:text-corporate-blue hover:bg-gray-50 transition-colors"
+                                                onClick={(e) => {
+                                                    handleNavClick(e, item.href);
+                                                    setActiveDropdown(null);
+                                                }}
+                                            >
+                                                {item.name}
+                                            </Link>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
                         ))}
                     </div>
 
@@ -167,20 +220,47 @@ const Navbar = () => {
                         initial={{ opacity: 0, y: -20 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -20 }}
-                        className="absolute top-full left-0 right-0 bg-white border-b border-gray-100 p-6 flex flex-col space-y-4 md:hidden"
+                        className="absolute top-full left-0 right-0 bg-white border-b border-gray-100 p-6 flex flex-col space-y-4 md:hidden shadow-xl z-50"
                     >
                         {navLinks.map((link) => (
-                            <Link
-                                key={link.name}
-                                to={link.href}
-                                onClick={(e) => {
-                                    handleNavClick(e, link.href);
-                                    setIsMobileMenuOpen(false);
-                                }}
-                                className="text-lg font-medium"
-                            >
-                                {link.name}
-                            </Link>
+                            <div key={link.name} className="flex flex-col">
+                                <Link
+                                    to={link.href}
+                                    onClick={(e) => {
+                                        if (link.dropdownItems) {
+                                            e.preventDefault();
+                                            setActiveDropdown(activeDropdown === link.name ? null : link.name);
+                                        } else {
+                                            handleNavClick(e, link.href);
+                                            setIsMobileMenuOpen(false);
+                                        }
+                                    }}
+                                    className="text-lg font-medium flex items-center justify-between"
+                                >
+                                    {link.name}
+                                    {link.dropdownItems && (
+                                        <ChevronDown size={18} className={`transition-transform duration-200 ${activeDropdown === link.name ? 'rotate-180' : ''}`} />
+                                    )}
+                                </Link>
+                                
+                                {link.dropdownItems && activeDropdown === link.name && (
+                                    <div className="flex flex-col mt-3 pl-4 space-y-3 border-l-2 border-gray-100 overflow-hidden">
+                                        {link.dropdownItems.map((item) => (
+                                            <Link
+                                                key={item.name}
+                                                to={item.href}
+                                                onClick={(e) => {
+                                                    handleNavClick(e, item.href);
+                                                    setIsMobileMenuOpen(false);
+                                                }}
+                                                className="text-base text-gray-500 hover:text-black transition-colors py-1"
+                                            >
+                                                {item.name}
+                                            </Link>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
                         ))}
                         <div className="pt-4 border-t border-gray-100 flex items-center justify-start gap-2">
                             <button
@@ -740,19 +820,51 @@ const Stack = () => {
 const Contact = ({ onOpenContactModal }: { onOpenContactModal: () => void }) => {
     const { t } = useLanguage();
     return (
-        <section id="contact" className="section-padding bg-gray-50">
-            <div className="max-w-3xl mx-auto text-center">
-                <h2 className="text-sm uppercase tracking-widest text-gray-400 font-semibold mb-6 font-display">{t('Contact', '总览与联系')}</h2>
-                <h3 className="text-4xl font-bold mb-8 font-display">{t('Ready to optimize your procurement process?', '准备好优化您的采购流程了吗？')}</h3>
-                <p className="text-gray-600 mb-12 text-lg">
-                    {t('I\'m always open to discussing digital transformation, AI automation, or global procurement strategies.', '我随时欢迎探讨数字转型、AI自动化或全球采购战略方向。')}
-                </p>
-                <button
-                    onClick={onOpenContactModal}
-                    className="inline-block bg-black text-white px-12 py-4 rounded-full font-bold hover:bg-corporate-blue transition-all shadow-xl"
-                >
-                    {t('GET IN TOUCH', '联系我')}
-                </button>
+        <section id="contact" className="py-24 px-6 md:px-12 lg:px-24 bg-[#f4f0ec]">
+            <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-16 lg:gap-24">
+                <div className="w-full lg:w-1/3 pt-2">
+                    <h2 className="text-3xl md:text-[2.5rem] font-bold text-gray-900 leading-tight tracking-tight mb-8">
+                        {t('Ready to optimize your procurement process?', '准备好优化您的采购流程了吗？')}
+                    </h2>
+                    <p className="text-gray-800 text-lg font-medium leading-relaxed">
+                        {t("I'm always open to discussing digital transformation, AI automation, or global procurement strategies.", "我随时欢迎探讨数字转型、AI自动化或全球采购战略方向。")}
+                    </p>
+                </div>
+                
+                <div className="w-full lg:w-2/3 flex flex-col">
+                    <div className="border-t border-[#dfdcd6]"></div>
+                    {[
+                        { 
+                            left: t('Get in Touch directly', '直达沟通：发送邮件或留言'), 
+                            right: t('Send Email', '发送邮件'),
+                            action: () => alert(t("Please send an email to yuli.zhang@hec.ca", "请发送邮件至 yuli.zhang@hec.ca"))
+                        },
+                        { 
+                            left: t('Professional Network', '职场互动：建立商业联系'), 
+                            right: t('LinkedIn', '领英主页'),
+                            href: "https://www.linkedin.com/in/yulizhang-hec/?locale=en"
+                        }
+                    ].map((item, idx) => (
+                        <div key={idx} className="flex border-b border-[#dfdcd6]">
+                            {item.href ? (
+                                <a href={item.href} target="_blank" rel="noopener noreferrer" className="w-full py-6 flex justify-between items-center group transition-colors">
+                                    <span className="font-bold text-gray-900 text-lg">{item.left}</span>
+                                    <span className="text-gray-500 font-medium text-sm">{item.right}</span>
+                                </a>
+                            ) : item.action ? (
+                                <button onClick={item.action} className="w-full py-6 flex justify-between items-center group transition-colors text-left">
+                                    <span className="font-bold text-gray-900 text-lg">{item.left}</span>
+                                    <span className="text-gray-500 font-medium text-sm">{item.right}</span>
+                                </button>
+                            ) : (
+                                <div className="w-full py-6 flex justify-between items-center text-left">
+                                    <span className="font-bold text-gray-900 text-lg">{item.left}</span>
+                                    <span className="text-gray-500 font-medium text-sm">{item.right}</span>
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                </div>
             </div>
         </section>
     );
@@ -1538,35 +1650,39 @@ IF(
 const AILabSection = () => {
     const { t } = useLanguage();
     return (
-        <section id="ailab" className="section-padding bg-black text-white overflow-hidden relative">
-            <div className="absolute inset-0 bg-blue-900/20 mix-blend-multiply pointer-events-none" />
-            <div className="absolute top-0 right-0 w-96 h-96 bg-corporate-blue/30 rounded-full blur-[100px] pointer-events-none" />
-            <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-500/30 rounded-full blur-[100px] pointer-events-none" />
-            
-            <div className="max-w-7xl mx-auto relative z-10 text-center">
-                <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md rounded-full text-blue-300 text-xs font-bold uppercase tracking-widest mb-8 border border-white/20">
-                    <Bot size={16} /> {t('Innovation Hub', '创新网络中枢')}
+        <section id="ailab" className="bg-[#141414] text-[#f4f4f5] overflow-hidden border-t border-[#333]">
+            <div className="max-w-7xl mx-auto flex flex-col md:flex-row min-h-[600px]">
+                {/* Left Side: Text Content */}
+                <div className="w-full md:w-1/2 p-12 md:p-24 flex flex-col items-center justify-center text-center">
+                    <h2 
+                        className="text-5xl md:text-7xl mb-6 tracking-tight leading-tight" 
+                        style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}
+                    >
+                        {t('AI', 'AI')} <br />
+                        {t('Innovation Lab', 'Innovation Lab')}
+                    </h2>
+                    <p 
+                        className="text-lg text-gray-400 mb-10 max-w-sm italic" 
+                        style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}
+                    >
+                        {t(
+                            'Igniting and exploring AI sparks.', 
+                            'AI火花点燃和探索。'
+                        )}
+                    </p>
+                    
+                    <Link
+                        to="/ai-lab"
+                        className="inline-flex items-center justify-center bg-[#f4f4f5] text-[#141414] px-6 py-2.5 rounded-full font-medium hover:bg-white transition-colors text-sm shadow-md"
+                    >
+                        {t('Continue reading', '进入探索')}
+                    </Link>
                 </div>
-                <h2 className="text-5xl md:text-7xl font-bold mb-8 font-display leading-tight">
-                    {t('Welcome to the', '欢迎来到')} <br />
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">
-                        {t('AI Lab', 'AI 实验室')}
-                    </span>
-                </h2>
-                <p className="text-xl text-gray-400 mb-12 max-w-2xl mx-auto font-light leading-relaxed">
-                    {t(
-                        'A dedicated space for artificial intelligence exploration, where ideas meet implementation. Discover ongoing projects, share your innovative thoughts, and let\'s build the future together.', 
-                        '一个专注人工智能探索的专属空间，在此灵感将转化为现实。发现正在进行的项目，分享您的创新想法，让我们共同打造未来！'
-                    )}
-                </p>
-                
-                <Link
-                    to="/ai-lab"
-                    className="inline-flex items-center gap-3 bg-white text-black px-10 py-5 rounded-full font-bold hover:bg-gray-100 transition-all shadow-[0_0_40px_rgba(255,255,255,0.2)] hover:shadow-[0_0_60px_rgba(255,255,255,0.4)] group"
-                >
-                    {t('ENTER AI LAB', '进入 AI 实验室')}
-                    <ArrowRight className="group-hover:translate-x-1 transition-transform" />
-                </Link>
+
+                {/* Right Side: Image */}
+                <div className="w-full md:w-1/2 bg-[#1a1a1a] flex items-center justify-center relative overflow-hidden h-[400px] md:h-auto border-t md:border-t-0 md:border-l border-[#333]">
+                   <img src="/ai_abstract_glasswing.png" alt="AI Abstract" className="w-full h-full object-cover opacity-90" />
+                </div>
             </div>
         </section>
     );
