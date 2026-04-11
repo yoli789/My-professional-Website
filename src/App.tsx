@@ -651,7 +651,7 @@ const CaseStudies = () => {
                                     </div>
                                 )}
                             </div>
-                            <div className="p-8 flex-grow">
+                            <div className="p-8 flex-grow flex flex-col">
                                 <div className="flex gap-2 mb-4">
                                     {project.tags.map(tag => (
                                         <span key={tag} className="text-[10px] uppercase tracking-wider font-bold text-gray-400 border border-gray-200 px-2 py-1 rounded">
@@ -1185,7 +1185,7 @@ const ProcessAutomationDemo = () => {
                         >
                             {[
                                 {
-                                    src: "/automation/frontend_input.png",
+                                    src: "/user_friendly_interface_new.jpg",
                                     title: t("User-Friendly Interface", "前端输入：用户友好界面"),
                                     subtitle: t("Designing intuitive management interfaces for seamless data transmission to back-end databases.", "设计 user friendly 管理界面，用于将数据传送到后端数据库。")
                                 },
@@ -1206,7 +1206,7 @@ const ProcessAutomationDemo = () => {
                                 }
                             ].concat([
                                 {
-                                    src: "/automation/frontend_input.png",
+                                    src: "/user_friendly_interface_new.jpg",
                                     title: t("User-Friendly Interface", "前端输入：用户友好界面"),
                                     subtitle: t("Designing intuitive management interfaces for seamless data transmission to back-end databases.", "设计 user friendly 管理界面，用于将数据传送到后端数据库。")
                                 },
@@ -1369,7 +1369,7 @@ const ProcurementDashboardDemo = () => {
                         <div className="flex-1 w-full bg-gray-50 p-4 rounded-3xl border border-gray-100 relative overflow-hidden group">
                             <div className="relative rounded-2xl overflow-hidden bg-gray-100 min-h-[300px] flex items-center justify-center">
                                 <motion.img
-                                    src="/pareto-analysis.png"
+                                    src="/spend_pareto_flow.png"
                                     alt="Spend Pareto Analysis Report"
                                     className="w-full h-auto shadow-sm"
                                     initial={{ opacity: 0, scale: 0.95 }}
@@ -1379,7 +1379,7 @@ const ProcurementDashboardDemo = () => {
                                 />
                                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all flex items-center justify-center">
                                     <button
-                                        onClick={() => window.open('/pareto-analysis.png', '_blank')}
+                                        onClick={() => window.open('/spend_pareto_flow.png', '_blank')}
                                         className="bg-corporate-blue text-white px-6 py-3 rounded-full text-xs font-bold uppercase tracking-widest shadow-2xl transform translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all flex items-center gap-2 hover:bg-blue-700 active:scale-95"
                                     >
                                         <ExternalLink size={14} /> {t('Click to expand', '点击放大')}
@@ -1472,7 +1472,7 @@ const ProcurementDashboardDemo = () => {
                         <div className="flex-1 w-full bg-gray-50 p-4 rounded-3xl border border-gray-100 relative overflow-hidden group">
                             <div className="relative rounded-2xl overflow-hidden bg-gray-100 min-h-[300px] flex items-center justify-center">
                                 <motion.img
-                                    src="/container-forecast.png"
+                                    src="/container_logistics_forecast.png"
                                     alt="Logistics Spend Forecast Report"
                                     className="w-full h-auto shadow-sm"
                                     initial={{ opacity: 0, scale: 0.95 }}
@@ -1480,6 +1480,14 @@ const ProcurementDashboardDemo = () => {
                                     viewport={{ once: true }}
                                     referrerPolicy="no-referrer"
                                 />
+                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all flex items-center justify-center">
+                                    <button
+                                        onClick={() => window.open('/container_logistics_forecast.png', '_blank')}
+                                        className="bg-corporate-blue text-white px-6 py-3 rounded-full text-xs font-bold uppercase tracking-widest shadow-2xl transform translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all flex items-center gap-2 hover:bg-blue-700 active:scale-95"
+                                    >
+                                        <ExternalLink size={14} /> {t('Click to expand', '点击放大')}
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1493,15 +1501,15 @@ const ProcurementDashboardDemo = () => {
                         <h3 className="text-4xl font-bold font-display">{t("The Engine Room", "数据引擎核心代码展示")}</h3>
                     </div>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
                         {/* DAX Logic */}
-                        <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm">
-                            <div className="w-12 h-12 bg-corporate-blue/10 rounded-2xl flex items-center justify-center mb-6">
+                        <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm flex flex-col">
+                            <div className="w-12 h-12 bg-corporate-blue/10 rounded-2xl flex items-center justify-center mb-6 shrink-0">
                                 <Code2 className="text-corporate-blue" size={24} />
                             </div>
-                            <h4 className="text-xl font-bold mb-4">{t("DAX Core Logic", "核心 DAX 高阶图谱逻辑")}</h4>
-                            <p className="text-sm text-gray-500 mb-6">{t("Developed data transformation formulas to bridge cross-system metadata discrepancies, facilitating a single source of truth within Power BI through data normalization.", "开发数据清洗转换规则从而调和跨系统元数据差异，最终在 Power BI 内规范统一实现 Single Source of Truth（单一事实来源）。")}</p>
-                            <div className="bg-gray-900 p-4 rounded-xl font-mono text-[10px] text-blue-300 overflow-x-auto">
+                            <h4 className="text-xl font-bold mb-4 shrink-0">{t("DAX Core Logic", "核心 DAX 高阶图谱逻辑")}</h4>
+                            <p className="text-sm text-gray-500 mb-6 shrink-0">{t("Developed data transformation formulas to bridge cross-system metadata discrepancies, facilitating a single source of truth within Power BI through data normalization.", "开发数据清洗转换规则从而调和跨系统元数据差异，最终在 Power BI 内规范统一实现 Single Source of Truth（单一事实来源）。")}</p>
+                            <div className="bg-gray-900 p-4 rounded-xl font-mono text-[10px] text-blue-300 overflow-auto flex-grow h-full shadow-inner max-h-[500px]">
                                 <pre>
                                     {`Final Commodity Manager =
  
@@ -1590,18 +1598,28 @@ IF(
                         </div>
 
                         {/* Dataflows */}
-                        <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm">
-                            <div className="w-12 h-12 bg-corporate-blue/10 rounded-2xl flex items-center justify-center mb-6">
+                        <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm flex flex-col">
+                            <div className="w-12 h-12 bg-corporate-blue/10 rounded-2xl flex items-center justify-center mb-6 shrink-0">
                                 <Database className="text-corporate-blue" size={24} />
                             </div>
-                            <h4 className="text-xl font-bold mb-4">{t("Dataflows & ETL", "数据流与 ETL 工具")}</h4>
-                            <p className="text-sm text-gray-500 mb-6">{t("Consolidating multi-source data (SAP, Ariba, Excel) through Power Query for automated cleansing.", "运用 Power Query 对多来源渠道数据（SAP, Ariba, Excel）执行自动清理。")}</p>
-                            <div className="flex flex-wrap gap-2">
-                                {['SAP Ariba', 'Excel', 'Worksheets', 'SAP ERP'].map(source => (
-                                    <span key={source} className="px-2 py-1 bg-gray-100 rounded text-[8px] font-bold text-gray-500">{source}</span>
-                                ))}
-                                <div className="w-full flex justify-center my-2"><ArrowRight className="text-gray-300" size={12} /></div>
-                                <div className="w-full py-2 bg-corporate-blue/10 rounded text-center text-[10px] font-bold text-corporate-blue">Power Query ETL</div>
+                            <h4 className="text-xl font-bold mb-4 shrink-0">{t("Dataflows & ETL", "数据流与 ETL 工具")}</h4>
+                            <p className="text-sm text-gray-500 mb-6 shrink-0">{t("Consolidating multi-source data (SAP, Ariba, Excel) through Power Query for automated cleansing.", "运用 Power Query 对多来源渠道数据（SAP, Ariba, Excel）执行自动清理。")}</p>
+                            
+                            {/* Inserted Image Section */}
+                            <div className="relative rounded-xl overflow-hidden group flex-grow h-full bg-gray-50 border border-gray-100 p-2 flex items-center justify-center shadow-inner max-h-[500px]">
+                                <img 
+                                    src="/power_query_etl.png" 
+                                    alt="Power Query ETL Process Flowchart" 
+                                    className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105" 
+                                />
+                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all flex items-center justify-center">
+                                    <button
+                                        onClick={() => window.open('/power_query_etl.png', '_blank')}
+                                        className="bg-white text-corporate-blue px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-lg transform translate-y-2 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all flex items-center gap-1 hover:bg-gray-50"
+                                    >
+                                        <ExternalLink size={12} /> {t('Expand', '放大')}
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
