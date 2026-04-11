@@ -58,7 +58,9 @@ import {
     TrendingDown,
     BarChart2,
     Mail,
-    Search
+    Search,
+    ThumbsUp,
+    ThumbsDown
 } from 'lucide-react';
 
 import { createClient } from '@supabase/supabase-js';
@@ -1706,20 +1708,127 @@ const AILabSection = () => {
     );
 };
 
+// --- Sub-components for AILabPage ---
+
+const IdeaScatterChart = ({ ideas, onPointClick, onPointHover, activeIdeaId, hoveredIdeaId, t }: any) => {
+    const padding = { top: 60, right: 100, bottom: 60, left: 50 };
+    const width = 600;
+    const height = 400;
+    
+    const difficultyMap: Record<string, number> = { 'Easy': 1, 'Medium': 2, 'Difficult': 3 };
+    const maxVotes = Math.max(...ideas.map((i: any) => i.votes), 10) + 5;
+    
+    const getX = (votes: number) => padding.left + (votes / maxVotes) * (width - padding.left - padding.right);
+    const getY = (difficulty: string) => {
+        const val = difficultyMap[difficulty] || 2;
+        return height - padding.bottom - ((val - 0.5) / 3) * (height - padding.top - padding.bottom);
+    };
+
+    return (
+        <div className="relative w-full aspect-[3/2] bg-white rounded-3xl border border-gray-100 shadow-inner overflow-hidden">
+            <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-full">
+                <defs>
+                    <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#e2e8f0" />
+                    </marker>
+                </defs>
+
+                {/* Grid Lines */}
+                {[1, 2, 3].map(val => (
+                    <line key={val} x1={padding.left} y1={getY(Object.keys(difficultyMap).find(k => difficultyMap[k] === val)!)} x2={width - padding.right} y2={getY(Object.keys(difficultyMap).find(k => difficultyMap[k] === val)!)} stroke="#f8fafc" strokeWidth="1" />
+                ))}
+                
+                {/* Axes with Arrows */}
+                <line x1={padding.left} y1={height - padding.bottom} x2={padding.left} y2={padding.top - 10} stroke="#e2e8f0" strokeWidth="2" markerEnd="url(#arrow)" />
+                <line x1={padding.left} y1={height - padding.bottom} x2={width - padding.right + 10} y2={height - padding.bottom} stroke="#e2e8f0" strokeWidth="2" markerEnd="url(#arrow)" />
+                
+                {/* Axis Labels at Ends */}
+                <text x={padding.left} y={padding.top - 25} textAnchor="middle" className="text-[10px] font-bold fill-gray-400 uppercase tracking-widest">{t('Difficulty', '难度')}</text>
+                <text x={width - padding.right + 20} y={height - padding.bottom + 4} textAnchor="start" className="text-[10px] font-bold fill-gray-400 uppercase tracking-widest">{t('Heat', '热度')}</text>
+
+                {/* X-axis Numerical Ticks */}
+                {Array.from({ length: 6 }).map((_, i) => {
+                    const tickVal = Math.round((i * maxVotes) / 5);
+                    const x = getX(tickVal);
+                    return (
+                        <g key={i}>
+                            <line x1={x} y1={height - padding.bottom} x2={x} y2={height - padding.bottom + 5} stroke="#e2e8f0" strokeWidth="1" />
+                            <text x={x} y={height - padding.bottom + 20} textAnchor="middle" className="text-[9px] font-medium fill-gray-300">{tickVal}</text>
+                        </g>
+                    );
+                })}
+                
+                {/* Data Points */}
+                <AnimatePresence>
+                    {ideas.map((idea: any) => {
+                        const isActive = activeIdeaId === idea.id;
+                        const isHovered = hoveredIdeaId === idea.id;
+                        return (
+                            <motion.g 
+                                key={idea.id}
+                                initial={{ opacity: 0, scale: 0 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 0 }}
+                                onClick={() => onPointClick(idea)}
+                                onMouseEnter={() => onPointHover(idea)}
+                                onMouseLeave={() => onPointHover(null)}
+                                className="cursor-pointer"
+                            >
+                                <motion.circle 
+                                    cx={getX(idea.votes)} 
+                                    cy={getY(idea.difficulty)} 
+                                    r={isActive ? 12 : isHovered ? 10 : 7} 
+                                    className={`${isActive ? 'fill-corporate-blue' : 'fill-blue-400/60'} transition-all`}
+                                    initial={false}
+                                    animate={{ r: isActive ? 12 : isHovered ? 10 : 7 }}
+                                />
+                                {isActive && (
+                                    <motion.circle 
+                                        cx={getX(idea.votes)} 
+                                        cy={getY(idea.difficulty)} 
+                                        r={18} 
+                                        className="fill-none stroke-corporate-blue/30"
+                                        initial={{ scale: 0.8, opacity: 0 }}
+                                        animate={{ scale: 1.2, opacity: 1 }}
+                                        transition={{ repeat: Infinity, duration: 1.5 }}
+                                    />
+                                )}
+                            </motion.g>
+                        );
+                    })}
+                </AnimatePresence>
+            </svg>
+        </div>
+    );
+};
+
 const AILabPage = () => {
     const { t } = useLanguage();
     const [ideas, setIdeas] = useState<any[]>([]);
     const [newIdeaTitle, setNewIdeaTitle] = useState('');
     const [newIdeaDesc, setNewIdeaDesc] = useState('');
     const [newIdeaAuthor, setNewIdeaAuthor] = useState('');
+    const [newIdeaDifficulty, setNewIdeaDifficulty] = useState('Medium');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [activeUpdateIdx, setActiveUpdateIdx] = useState(0);
+    const [timeFilter, setTimeFilter] = useState('1m');
+    const [activeIdea, setActiveIdea] = useState<any>(null);
+    const [hoveredIdea, setHoveredIdea] = useState<any>(null);
     
-    // 中英文占位符，默认 mock 数据
+    // Store voted items in local storage
+    const [votedItems, setVotedItems] = useState<number[]>(() => {
+        const stored = localStorage.getItem('yuli_portfolio_voted_ideas');
+        return stored ? JSON.parse(stored) : [];
+    });
+
+    useEffect(() => {
+        localStorage.setItem('yuli_portfolio_voted_ideas', JSON.stringify(votedItems));
+    }, [votedItems]);
+
     const mockIdeas = [
-        { id: 1, title: 'Personalized Learning Agent', titleCn: '个性化学习助手', desc: 'An AI companion that adapts to your learning pace and curates customized content.', descCn: '适应你学习节奏的人工智能伴侣，并策划定制内容。', author: 'Anna', votes: 15, willImplement: false },
-        { id: 2, title: 'Intelligent Spend Categorizer', titleCn: '智能支出分类器', desc: 'Automatically categorizes indirect spend using LLMs for instant clarity.', descCn: '使用大语言模型对间接支出进行自动分类，即时呈现清晰数据。', author: 'Mark', votes: 32, willImplement: true },
-        { id: 3, title: 'Creative Content Generator', titleCn: '创意内容生成引擎', desc: 'Generate marketing copy and visuals simultaneously.', descCn: '利用AI同时生成营销文案和相关视觉效果的系统。', author: 'Sophia', votes: 8, willImplement: false }
+        { id: 1, title: 'Personalized Learning Agent', titleCn: '个性化学习助手', desc: 'An AI companion that adapts to your learning pace and curates customized content.', descCn: '适应你学习节奏的人工智能伴侣，并策划定制内容。', author: 'Anna', votes: 15, willImplement: false, difficulty: 'Medium', created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString() },
+        { id: 2, title: 'Intelligent Spend Categorizer', titleCn: '智能支出分类器', desc: 'Automatically categorizes indirect spend using LLMs for instant clarity.', descCn: '使用大语言模型对间接支出进行自动分类，即时呈现清晰数据。', author: 'Mark', votes: 32, willImplement: true, difficulty: 'Difficult', created_at: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString() },
+        { id: 3, title: 'Creative Content Generator', titleCn: '创意内容生成引擎', desc: 'Generate marketing copy and visuals simultaneously.', descCn: '利用AI同时生成营销文案和相关视觉效果的系统。', author: 'Sophia', votes: 8, willImplement: false, difficulty: 'Easy', created_at: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000).toISOString() }
     ];
 
     useEffect(() => {
@@ -1741,12 +1850,22 @@ const AILabPage = () => {
         }
     };
 
-    const handleVote = async (id: number) => {
-        setIdeas((prev: any[]) => prev.map((idea: any) => idea.id === id ? { ...idea, votes: idea.votes + 1} : idea));
+    const handleVote = async (id: number, type: 'up' | 'down') => {
+        if (votedItems.includes(id)) return;
+        
+        const voteValue = type === 'up' ? 1 : -1;
+        
+        setIdeas((prev: any[]) => prev.map((idea: any) => idea.id === id ? { ...idea, votes: idea.votes + voteValue } : idea));
+        if (activeIdea?.id === id) {
+            setActiveIdea((prev: any) => ({ ...prev, votes: prev.votes + voteValue }));
+        }
+        
+        setVotedItems(prev => [...prev, id]);
+
         try {
             const idea = ideas.find((i: any) => i.id === id);
             if(idea) {
-                await supabase.from('ideas').update({ votes: idea.votes + 1 }).eq('id', id);
+                await supabase.from('ideas').update({ votes: idea.votes + voteValue }).eq('id', id);
             }
         } catch(e) {
             console.error('Vote failed in database:', e);
@@ -1764,15 +1883,18 @@ const AILabPage = () => {
             descCn: newIdeaDesc,
             author: newIdeaAuthor || (t('Anonymous', '匿名') as string),
             votes: 0,
-            willImplement: false
+            willImplement: false,
+            difficulty: newIdeaDifficulty,
+            created_at: new Date().toISOString()
         };
         
         try {
-            // 先在UI展示，如果表不存在则依靠mock更新
-            setIdeas([{ ...newIdea, id: Date.now() }, ...ideas]);
+            const tempId = Date.now();
+            setIdeas([{ ...newIdea, id: tempId }, ...ideas]);
             setNewIdeaTitle('');
             setNewIdeaDesc('');
             setNewIdeaAuthor('');
+            setNewIdeaDifficulty('Medium');
             
             const { error } = await supabase.from('ideas').insert([newIdea]);
             if (error) throw error;
@@ -1946,74 +2068,149 @@ const AILabPage = () => {
                 </div>
             </section>
 
-            {/* Submit AI Ideas (Renamed from Crowdsourcing) */}
+            {/* Submit AI Ideas - Quadrant Chart Re-design */}
             <section className="mb-24">
-                <h3 className="text-3xl font-bold mb-8 font-display text-corporate-blue flex items-center gap-3">
-                    <MessageSquare size={28} /> {t("Submit AI Ideas", "提交 AI 想法")}
-                </h3>
-                <p className="text-gray-600 mb-10 text-lg">
-                    {t("Have an interesting idea for an AI application? Submit it below! I will select the most fascinating concepts to build and implement. Ideas marked with 💡 are currently in my pipeline.", "你对AI应用有什么有趣的想法吗？在下方提出，我会挑选最吸引人的概念进行开发与实现！标有 💡 的想法已加入我的开发计划中。")}
-                </p>
+                <div className="flex flex-col md:flex-row items-center justify-between mb-8">
+                    <h3 className="text-3xl font-bold font-display text-corporate-blue flex items-center gap-3">
+                        <MessageSquare size={28} /> {t("Submit AI Ideas", "提交 AI 想法")}
+                    </h3>
+                    
+                    {/* Time Filter */}
+                    <div className="flex items-center gap-2 mt-4 md:mt-0">
+                        <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">{t("Filter by:", "筛选器:")}</span>
+                        <select 
+                            value={timeFilter} 
+                            onChange={(e) => setTimeFilter(e.target.value)}
+                            className="bg-gray-50 border border-gray-100 rounded-full px-4 py-2 text-xs font-bold outline-none focus:ring-2 focus:ring-corporate-blue/10 transition-all cursor-pointer"
+                        >
+                            <option value="1w">{t("Last 1 Week", "最近一周")}</option>
+                            <option value="2w">{t("Last 2 Weeks", "最近两周")}</option>
+                            <option value="1m">{t("Last Month", "最近一月")}</option>
+                            <option value="3m">{t("Last 3 Months", "最近三月")}</option>
+                        </select>
+                    </div>
+                </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
-                    {/* Submission Form */}
-                    <div className="lg:col-span-2 bg-gray-50 p-8 rounded-3xl border border-gray-100 h-fit">
-                        <h4 className="text-xl font-bold mb-6 font-display">{t("Submit Your Idea", "提交你的想法")}</h4>
-                        <form onSubmit={handleSubmit} className="space-y-5">
-                            <div>
-                                <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">{t("Idea Title", "想法标题")}</label>
-                                <input required value={newIdeaTitle} onChange={(e: any) => setNewIdeaTitle(e.target.value)} type="text" className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-corporate-blue/20 outline-none transition-all" placeholder={t("e.g., AI Contract Generator", "例如：AI 合同生成器")} />
-                            </div>
-                            <div>
-                                <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">{t("Description", "具体描述")}</label>
-                                <textarea required value={newIdeaDesc} onChange={(e: any) => setNewIdeaDesc(e.target.value)} rows={4} className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-corporate-blue/20 outline-none transition-all resize-none" placeholder={t("What problem does it solve?", "它能解决什么问题？")} />
-                            </div>
-                            <div>
-                                <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">{t("Your Name (Optional)", "你的名字 (选填)")}</label>
-                                <input value={newIdeaAuthor} onChange={(e: any) => setNewIdeaAuthor(e.target.value)} type="text" className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-corporate-blue/20 outline-none transition-all" placeholder={t("Anonymous", "匿名")} />
-                            </div>
-                            <button disabled={isSubmitting} type="submit" className="w-full bg-black text-white font-bold py-4 rounded-xl hover:bg-corporate-blue transition-colors flex items-center justify-center gap-2 disabled:opacity-50">
-                                {isSubmitting ? t("Submitting...", "提交中...") : t("Submit Idea", "提交想法")}
-                            </button>
-                        </form>
+                    {/* Left Column: Chart & Detail Box */}
+                    <div className="lg:col-span-3 space-y-8">
+                        {/* The Chart */}
+                        <IdeaScatterChart 
+                            ideas={ideas.filter(idea => {
+                                const now = new Date();
+                                const ideaDate = new Date(idea.created_at);
+                                const diffDays = (now.getTime() - ideaDate.getTime()) / (1000 * 3600 * 24);
+                                if (timeFilter === '1w') return diffDays <= 7;
+                                if (timeFilter === '2w') return diffDays <= 14;
+                                if (timeFilter === '1m') return diffDays <= 30;
+                                if (timeFilter === '3m') return diffDays <= 90;
+                                return true;
+                            })}
+                            onPointClick={(idea: any) => setActiveIdea(idea)}
+                            onPointHover={(idea: any) => setHoveredIdea(idea)}
+                            activeIdeaId={activeIdea?.id}
+                            hoveredIdeaId={hoveredIdea?.id}
+                            t={t}
+                        />
+                        
+                        {/* Detail View Box */}
+                        <div className="min-h-[220px]">
+                            <AnimatePresence mode="wait">
+                                {(activeIdea || hoveredIdea) ? (
+                                    <motion.div 
+                                        key={(hoveredIdea || activeIdea).id}
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -10 }}
+                                        className="bg-gradient-to-br from-white to-blue-50/30 p-8 rounded-[2rem] border border-blue-100/50 shadow-sm relative group"
+                                    >
+                                        <div className="flex justify-between items-start mb-4">
+                                            <div>
+                                                <div className="flex items-center gap-3 mb-2">
+                                                    {(hoveredIdea || activeIdea).willImplement && <span className="text-xl">💡</span>}
+                                                    <h4 className="text-2xl font-bold text-gray-900">
+                                                        {t((hoveredIdea || activeIdea).title, (hoveredIdea || activeIdea).titleCn || (hoveredIdea || activeIdea).title)}
+                                                    </h4>
+                                                </div>
+                                                <div className="text-xs font-bold uppercase tracking-widest text-gray-400">
+                                                    {t("Submitted by:", "提交者：")} <span className="text-gray-700">{(hoveredIdea || activeIdea).author}</span> • {(hoveredIdea || activeIdea).difficulty}
+                                                </div>
+                                            </div>
+                                            
+                                            {/* Like/Dislike Actions */}
+                                            <div className="flex items-center gap-4">
+                                                <button 
+                                                    onClick={() => handleVote((hoveredIdea || activeIdea).id, 'up')}
+                                                    disabled={votedItems.includes((hoveredIdea || activeIdea).id)}
+                                                    className={`p-3 rounded-full transition-all ${votedItems.includes((hoveredIdea || activeIdea).id) ? 'bg-orange-100 text-orange-500' : 'bg-gray-50 text-gray-400 hover:bg-gray-100'}`}
+                                                >
+                                                    <ThumbsUp size={20} />
+                                                </button>
+                                                <button 
+                                                    onClick={() => handleVote((hoveredIdea || activeIdea).id, 'down')}
+                                                    disabled={votedItems.includes((hoveredIdea || activeIdea).id)}
+                                                    className="p-3 bg-gray-50 text-gray-400 rounded-full hover:bg-gray-100 transition-all disabled:opacity-30"
+                                                >
+                                                    <ThumbsDown size={20} />
+                                                </button>
+                                                <div className="flex flex-col items-center ml-2 border-l border-gray-100 pl-4">
+                                                    <span className="text-2xl font-bold text-corporate-blue">{(hoveredIdea || activeIdea).votes}</span>
+                                                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{t("Heat", "热度")}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <p className="text-gray-600 leading-relaxed text-lg">
+                                            {t((hoveredIdea || activeIdea).desc, (hoveredIdea || activeIdea).descCn || (hoveredIdea || activeIdea).desc)}
+                                        </p>
+                                    </motion.div>
+                                ) : (
+                                    <div className="h-full flex items-center justify-center border-2 border-dashed border-gray-100 rounded-[2.5rem] p-12 text-gray-300 italic text-center">
+                                        {t("Select a point on the chart to view details", "在图表中选择一个点以查看详情")}
+                                    </div>
+                                )}
+                            </AnimatePresence>
+                        </div>
                     </div>
 
-                    {/* Submitted Ideas Display */}
-                    <div className="lg:col-span-3 space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
-                        <style dangerouslySetInnerHTML={{__html: `
-                            .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-                            .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-                            .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 8px; }
-                            .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-                        `}} />
-                        <AnimatePresence>
-                            {ideas.map((idea: any) => (
-                                <motion.div 
-                                    key={idea.id} 
-                                    initial={{ opacity: 0, y: 10 }} 
-                                    animate={{ opacity: 1, y: 0 }} 
-                                    className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col sm:flex-row gap-6 items-start"
-                                >
-                                    <div className="flex-1">
-                                        <div className="flex items-center gap-2 mb-2">
-                                            {idea.willImplement && <span title={t("Will Implement!", "计划实现！")} className="text-xl">💡</span>}
-                                            <h5 className="text-lg font-bold text-gray-900">{t(idea.title, idea.titleCn || idea.title)}</h5>
-                                        </div>
-                                        <p className="text-gray-600 text-sm mb-4">{t(idea.desc, idea.descCn || idea.desc)}</p>
-                                        <div className="text-[10px] uppercase font-bold text-gray-400 tracking-widest">
-                                            {t("Submitted by:", "提交者：")} <span className="text-gray-700">{idea.author}</span>
-                                        </div>
+                    {/* Right Column: Submission Form */}
+                    <div className="lg:col-span-2">
+                        <div className="bg-gray-50 p-8 rounded-[2.5rem] border border-gray-100 shadow-sm sticky top-24">
+                            <h4 className="text-2xl font-bold mb-8 font-display">{t("Submit Your Idea", "提交你的想法")}</h4>
+                            <form onSubmit={handleSubmit} className="space-y-6">
+                                <div>
+                                    <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-2">{t("Idea Title", "想法标题")}</label>
+                                    <input required value={newIdeaTitle} onChange={(e: any) => setNewIdeaTitle(e.target.value)} type="text" className="w-full px-5 py-4 bg-white border border-gray-200 rounded-2xl focus:ring-2 focus:ring-corporate-blue/20 outline-none transition-all" placeholder={t("e.g., AI Contract Generator", "例如：AI 合同生成器")} />
+                                </div>
+                                <div>
+                                    <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-2">{t("Description", "项目描述")}</label>
+                                    <textarea required value={newIdeaDesc} onChange={(e: any) => setNewIdeaDesc(e.target.value)} rows={4} className="w-full px-5 py-4 bg-white border border-gray-200 rounded-2xl focus:ring-2 focus:ring-corporate-blue/20 outline-none transition-all resize-none" placeholder={t("What problem does it solve?", "它能解决什么问题？")} />
+                                </div>
+                                
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-2">{t("Your Name", "你的名字")}</label>
+                                        <input value={newIdeaAuthor} onChange={(e: any) => setNewIdeaAuthor(e.target.value)} type="text" className="w-full px-5 py-4 bg-white border border-gray-200 rounded-2xl focus:ring-2 focus:ring-corporate-blue/20 outline-none transition-all" placeholder={t("Anonymous", "匿名")} />
                                     </div>
-                                    <button 
-                                        onClick={() => handleVote(idea.id)} 
-                                        className="shrink-0 flex items-center gap-2 px-4 py-2 bg-blue-50 text-corporate-blue rounded-xl hover:bg-blue-100 transition-colors"
-                                    >
-                                        <TrendingUp size={16} /> 
-                                        <span className="font-bold">{idea.votes}</span>
-                                    </button>
-                                </motion.div>
-                            ))}
-                        </AnimatePresence>
+                                    <div>
+                                        <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-2">{t("Difficulty", "难度值")}</label>
+                                        <select 
+                                            value={newIdeaDifficulty} 
+                                            onChange={(e) => setNewIdeaDifficulty(e.target.value)}
+                                            className="w-full px-5 py-4 bg-white border border-gray-200 rounded-2xl focus:ring-2 focus:ring-corporate-blue/20 outline-none transition-all appearance-none cursor-pointer"
+                                        >
+                                            <option value="Easy">{t("Easy", "容易")}</option>
+                                            <option value="Medium">{t("Medium", "中等")}</option>
+                                            <option value="Difficult">{t("Difficult", "困难")}</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <button disabled={isSubmitting} type="submit" className="w-full bg-slate-900 text-white font-bold py-5 rounded-2xl hover:bg-corporate-blue transition-all shadow-lg hover:shadow-corporate-blue/20 flex items-center justify-center gap-3 disabled:opacity-50 mt-4 group">
+                                    <TrendingUp size={20} className="group-hover:-translate-y-1 transition-transform" />
+                                    {isSubmitting ? t("Submitting...", "提交中...") : t("Submit Idea", "提交想法")}
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </section>
