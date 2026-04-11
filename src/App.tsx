@@ -1785,64 +1785,47 @@ const AILabPage = () => {
 
     const projects = [
         {
-            title: t('Agentic AI', '智能体 AI'),
+            title: t('AI coding website', 'AI 编程网站'),
             features: [
-                t('Explore the cutting-edge building blocks of AI agents designed to reason, plan, and act.', '探索被设计用于推理、规划和执行操作的 AI 智能体的前沿模块。'),
-                t('Transform enterprise data into actionable knowledge.', '将繁杂的企业数据转化为具有落地价值的知识操作。')
+                t('Transform digital professional experience into AI-centric presentation methods.', '将数字化职业经验转化为以 AI 技术为主的表现方式。'),
+                t('Tech Stack: Google AI Studio + VS Code + GitHub (Version Backup) + Vercel + Supabase + Mail Service (TBD).', '技术栈：Google AI Studio + VS Code + GitHub (版本备份) + Vercel + Supabase + 邮件发送服务 (TBD)。')
             ],
             image: '/ai_contract_review.png',
-            linkText: t('Explore Agentic AI Solutions', '探索智能体 AI 解决方案')
+            linkText: t('Get the access to this project', '获取项目访问权限'),
+            link: 'https://zhangyuli.top'
         },
         {
-            title: t('Data Science', '数据科学'),
+            title: t('Development', '开发中项目'),
             features: [
-                t('Accelerate data processing and AI training.', '加速底层数据处理与大模型训练。'),
-                t('Reduce infrastructure costs and power consumption.', '降低基础设施成本及运行计算能耗。'),
-                t('Get started quickly with no code changes, and keep projects running with 24/7 support.', '以零代码的方式快速启动，并获得全天候无间断支持。')
+                t('Solving connectivity-related challenges bridging corporate environments and the real world.', '解决公司和现实世界的连接型问题。')
             ],
             image: '/ai_spend_analytics.png',
-            linkText: t('Explore Data Analytics Solutions', '探索数据分析解决方案')
+            linkText: t('Coming Soon', '即将发布'),
+            link: '#'
         },
-        {
-            title: t('Vision AI', '机器视觉 AI'),
-            features: [
-                t('Develop faster with powerful cloud-native, API-driven building blocks.', '通过云原生 API 驱动模块进行高速开发。'),
-                t('Create highly accurate AI applications with high performance.', '创建兼具高性能与超高准确度的供应链 AI 应用。'),
-                t('Achieve multimodal real-time insights.', '实现具备实时反馈的多模态深入洞察。')
-            ],
-            image: '/ai_carbon_tracker.png',
-            linkText: t('Explore Vision AI Solutions', '探索机器视觉 AI 解决方案')
-        }
     ];
 
     const progressUpdates = [
         {
-            date: 'Jan 15, 2026',
-            category: t('NLP Research', '自然语言处理研究'),
-            title: t('Neural Procurement Index: New architectural blocks for clause extraction', '神经网络采购索引：用于条款提取的全新架构模块'),
+            date: '2026.04',
+            category: t('Personal Website', '个人网站'),
+            title: t('Professional Portfolio: Sharing Procurement & Digitalization Insights', '职业网站：一个分享采购和数字化经验的个人网站'),
             image: '/progress_update_1.png',
-            desc: t('Optimizing transformer attention mechanisms specifically for multi-lingual legal procurement documents.', '专门针对多语言法律采购文件优化 Transformer 注意力机制。')
+            desc: t('A professional portal built with modern web technologies to share procurement strategies and supply chain digitalization insights.', '基于现代 Web 技术构建的专业门户，旨在沉淀采购策略、供应链数字化转型心得及 AI 应用深度实践。')
         },
         {
-            date: 'Dec 10, 2025',
-            category: t('Systems', '系统架构'),
-            title: t('Integrating Vector Clusters: Scalable RAG for legacy contract retrieval', '向量集群集成：用于历史合同检索的可扩展 RAG 系统'),
+            date: '2026.07',
+            category: t('Apps', 'Apps'),
+            title: t('Bridge connecting companies and the real world', '公司和现实世界的连接桥梁'),
             image: '/progress_update_2.png',
-            desc: t('Deploying high-performance vector databases to handle millions of historical SKU and contract data points.', '部署高性能向量数据库，以处理数百万个历史 SKU 和合同数据点。')
-        },
-        {
-            date: 'Nov 5, 2025',
-            category: t('User Interface', '用户界面'),
-            title: t('Interactive AI Dashboards: Dark-mode glassmorphism implementation', '交互式 AI 看板：暗色磨砂玻璃化设计实现'),
-            image: '/user_friendly_interface_new.jpg',
-            desc: t('Refining the visual clarity of AI-driven insights through modern design systems.', '通过现代设计系统优化 AI 驱动洞察的视觉清晰度。')
+            desc: t('Concept Generating...', '概念生成中...')
         }
     ];
 
     return (
         <DemoLayout 
-            title={t("AI Laboratory", "AI 人工智能实验室")}
-            subtitle={t("A playground for machine learning, automation concepts, and community-driven AI ideas.", "机器学习、自动化概念以及社区驱动型 AI 想法的试验田。")}
+            title={t("Yuli's AI Lab", "Yuli 的 AI 实验室")}
+            subtitle={t("An AI Sandbox for Concept Validation and Collaborative Innovation.", "一个用于概念验证与协作创新的 AI 沙盒。")}
         >
             {/* Project Library */}
             <section className="mb-24">
@@ -1865,7 +1848,7 @@ const AILabPage = () => {
                                         </li>
                                     ))}
                                 </ul>
-                                <a href="#" className="text-sm font-bold text-green-700 flex items-center gap-1 hover:gap-2 transition-all mt-auto w-fit">
+                                <a href={proj.link || "#"} target={proj.link?.startsWith('http') ? "_blank" : undefined} rel={proj.link?.startsWith('http') ? "noopener noreferrer" : undefined} className="text-sm font-bold text-green-700 flex items-center gap-1 hover:gap-2 transition-all mt-auto w-fit">
                                     {proj.linkText} <span className="text-lg leading-none shrink-0 mb-0.5">{'>'}</span>
                                 </a>
                             </div>
@@ -1875,10 +1858,10 @@ const AILabPage = () => {
             </section>
 
             {/* Latest Progress Tracker */}
-            <section className="mb-24">
-                <div className="flex flex-col lg:flex-row gap-12">
-                    {/* Updates Table */}
-                    <div className="flex-grow lg:w-3/5">
+            <section className="mb-24 px-4 sm:px-0">
+                <div className="flex flex-col lg:flex-row gap-12 justify-between">
+                    {/* Updates Table - 2/3 Width */}
+                    <div className="lg:w-2/3">
                         <div className="flex items-center justify-between mb-8">
                             <h3 className="text-4xl font-bold font-display">{t("Latest Progress", "最新开发动态")}</h3>
                             <div className="relative hidden sm:block">
@@ -1906,7 +1889,7 @@ const AILabPage = () => {
                                     >
                                         <div className="col-span-3 text-sm text-gray-500 font-medium">{update.date}</div>
                                         <div className="col-span-3 text-sm text-gray-600">{update.category}</div>
-                                        <div className="col-span-6 text-sm font-bold text-gray-900 group-hover:text-corporate-blue transition-colors">
+                                        <div className="col-span-6 text-sm text-gray-900 group-hover:text-corporate-blue transition-colors">
                                             {update.title}
                                         </div>
                                     </button>
@@ -1915,8 +1898,8 @@ const AILabPage = () => {
                         </div>
                     </div>
 
-                    {/* Preview Card */}
-                    <div className="lg:w-2/5">
+                    {/* Preview Card - 1/4 Width */}
+                    <div className="lg:w-1/4">
                         <div className="sticky top-24">
                             <motion.div 
                                 key={activeUpdateIdx}
@@ -1924,19 +1907,20 @@ const AILabPage = () => {
                                 animate={{ opacity: 1, x: 0 }}
                                 className="bg-white rounded-[2rem] border border-gray-100 shadow-xl overflow-hidden"
                             >
-                                <div className="aspect-square bg-gray-50 overflow-hidden">
-                                    <img 
-                                        src={progressUpdates[activeUpdateIdx].image} 
-                                        alt={progressUpdates[activeUpdateIdx].title}
-                                        className="w-full h-full object-cover"
-                                    />
+                                <div className="p-4 pb-0">
+                                    <div className="aspect-[4/3] bg-gray-50 overflow-hidden rounded-2xl shadow-sm border border-gray-50">
+                                        <img 
+                                            src={progressUpdates[activeUpdateIdx].image} 
+                                            alt={progressUpdates[activeUpdateIdx].title}
+                                            className="w-full h-full object-cover"
+                                        />
+                                    </div>
                                 </div>
-                                <div className="p-8 bg-white">
-                                    <div className="text-[10px] font-bold uppercase tracking-widest text-corporate-blue mb-2">
+                                <div className="p-6 bg-white">
+                                    <div className="text-[10px] font-bold uppercase tracking-widest text-corporate-blue mb-2.5">
                                         {progressUpdates[activeUpdateIdx].category}
                                     </div>
-                                    <h4 className="text-xl font-bold mb-4">{progressUpdates[activeUpdateIdx].title}</h4>
-                                    <p className="text-gray-600 text-sm leading-relaxed">
+                                    <p className="text-gray-500 text-[13px] leading-relaxed">
                                         {progressUpdates[activeUpdateIdx].desc}
                                     </p>
                                 </div>
