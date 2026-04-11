@@ -57,14 +57,17 @@ import {
     AlertTriangle,
     TrendingDown,
     BarChart2,
-    Mail
+    Mail,
+    Search
 } from 'lucide-react';
 
 import { createClient } from '@supabase/supabase-js';
 
 // Setup Supabase Client
 // Please replace these with your actual Supabase project URL and Anon Key in your .env file
+// @ts-ignore
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://placeholder.supabase.co';
+// @ts-ignore
 const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'placeholder-key';
 export const supabase = createClient(supabaseUrl, supabaseKey);
 
@@ -1511,20 +1514,16 @@ const ProcurementDashboardDemo = () => {
                             <p className="text-sm text-gray-500 mb-6 shrink-0">{t("Developed data transformation formulas to bridge cross-system metadata discrepancies, facilitating a single source of truth within Power BI through data normalization.", "开发数据清洗转换规则从而调和跨系统元数据差异，最终在 Power BI 内规范统一实现 Single Source of Truth（单一事实来源）。")}</p>
                             <div className="bg-gray-900 p-4 rounded-xl font-mono text-[10px] text-blue-300 overflow-auto flex-grow h-full shadow-inner max-h-[500px]">
                                 <pre>
-                                    {`Final Commodity Manager =
+                                    {`Final Name =
  
-VAR L1 = 'Project CSV'[RTX Taxonomy level 1]
-VAR L2 = 'Project CSV'[RTX Taxonomy level 2]
-VAR L3 = 'Project CSV'[RTX Taxonomy level 3]
+VAR L1 = 'Project CSV'[Reference level 1]
  
 VAR TaxonomyCM =
     CALCULATE (
-        SELECTEDVALUE ( 'RTX Taxonomy_VF'[Commodity Manager] ),
+        SELECTEDVALUE ( 'Reference'[Name] ),
         FILTER (
-            'RTX Taxonomy_VF',
-            ( ISBLANK ( L1 ) || 'RTX Taxonomy_VF'[CategoryL1] = L1 ) &&
-            ( ISBLANK ( L2 ) || 'RTX Taxonomy_VF'[CategoryL2] = L2 ) &&
-            ( ISBLANK ( L3 ) || 'RTX Taxonomy_VF'[CategoryL3] = L3 )
+            'Reference',
+            ( ISBLANK ( L1 ) || 'Reference'[CategoryL1] = L1 )
         )
     )
  
@@ -1536,7 +1535,7 @@ VAR IsInvalidTaxonomyCM =
 VAR RawName =
     IF (
         IsInvalidTaxonomyCM,
-        'Project CSV'[Commodity Manager.1],
+        'Project CSV'[Name.1],
         TaxonomyCM
     )
  
@@ -1581,7 +1580,7 @@ VAR LastName =
         SWITCH(
             TRUE(),
             -- Updated logic: If the name is detected (with or without spaces), return the version with NO spaces
-            NoSpaces = "AITKACIAZZOU", "AITKACIAZZOU",
+            NoSpaces = "People Name", "PEOPLENAME",
  
             -- fallback
             LastNameRaw
@@ -1667,6 +1666,7 @@ IF(
 
 const AILabSection = () => {
     const { t } = useLanguage();
+
     return (
         <section id="ailab" className="bg-[#141414] text-[#f4f4f5] overflow-hidden border-t border-[#333]">
             <div className="max-w-7xl mx-auto flex flex-col md:flex-row min-h-[600px]">
@@ -1713,6 +1713,7 @@ const AILabPage = () => {
     const [newIdeaDesc, setNewIdeaDesc] = useState('');
     const [newIdeaAuthor, setNewIdeaAuthor] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [activeUpdateIdx, setActiveUpdateIdx] = useState(0);
     
     // 中英文占位符，默认 mock 数据
     const mockIdeas = [
@@ -1784,16 +1785,57 @@ const AILabPage = () => {
 
     const projects = [
         {
-            title: t('Contract Review Automator', '合同审查自动化系统'),
-            desc: t('Automatically identifies risks and missing clauses in procurement agreements.', '自动识别采购协议中的风险点与缺失条款。'),
-            status: t('Completed', '已完成'),
-            link: '#'
+            title: t('Agentic AI', '智能体 AI'),
+            features: [
+                t('Explore the cutting-edge building blocks of AI agents designed to reason, plan, and act.', '探索被设计用于推理、规划和执行操作的 AI 智能体的前沿模块。'),
+                t('Transform enterprise data into actionable knowledge.', '将繁杂的企业数据转化为具有落地价值的知识操作。')
+            ],
+            image: '/ai_contract_review.png',
+            linkText: t('Explore Agentic AI Solutions', '探索智能体 AI 解决方案')
         },
         {
-            title: t('Carbon Footprint Tracker AI', '碳足迹AI追踪器'),
-            desc: t('Estimates CO2 impact of procurement choices using machine learning.', '利用机器学习评估采购选品的碳排放影响。'),
-            status: t('Planned', '计划中'),
-            link: '#'
+            title: t('Data Science', '数据科学'),
+            features: [
+                t('Accelerate data processing and AI training.', '加速底层数据处理与大模型训练。'),
+                t('Reduce infrastructure costs and power consumption.', '降低基础设施成本及运行计算能耗。'),
+                t('Get started quickly with no code changes, and keep projects running with 24/7 support.', '以零代码的方式快速启动，并获得全天候无间断支持。')
+            ],
+            image: '/ai_spend_analytics.png',
+            linkText: t('Explore Data Analytics Solutions', '探索数据分析解决方案')
+        },
+        {
+            title: t('Vision AI', '机器视觉 AI'),
+            features: [
+                t('Develop faster with powerful cloud-native, API-driven building blocks.', '通过云原生 API 驱动模块进行高速开发。'),
+                t('Create highly accurate AI applications with high performance.', '创建兼具高性能与超高准确度的供应链 AI 应用。'),
+                t('Achieve multimodal real-time insights.', '实现具备实时反馈的多模态深入洞察。')
+            ],
+            image: '/ai_carbon_tracker.png',
+            linkText: t('Explore Vision AI Solutions', '探索机器视觉 AI 解决方案')
+        }
+    ];
+
+    const progressUpdates = [
+        {
+            date: 'Jan 15, 2026',
+            category: t('NLP Research', '自然语言处理研究'),
+            title: t('Neural Procurement Index: New architectural blocks for clause extraction', '神经网络采购索引：用于条款提取的全新架构模块'),
+            image: '/progress_update_1.png',
+            desc: t('Optimizing transformer attention mechanisms specifically for multi-lingual legal procurement documents.', '专门针对多语言法律采购文件优化 Transformer 注意力机制。')
+        },
+        {
+            date: 'Dec 10, 2025',
+            category: t('Systems', '系统架构'),
+            title: t('Integrating Vector Clusters: Scalable RAG for legacy contract retrieval', '向量集群集成：用于历史合同检索的可扩展 RAG 系统'),
+            image: '/progress_update_2.png',
+            desc: t('Deploying high-performance vector databases to handle millions of historical SKU and contract data points.', '部署高性能向量数据库，以处理数百万个历史 SKU 和合同数据点。')
+        },
+        {
+            date: 'Nov 5, 2025',
+            category: t('User Interface', '用户界面'),
+            title: t('Interactive AI Dashboards: Dark-mode glassmorphism implementation', '交互式 AI 看板：暗色磨砂玻璃化设计实现'),
+            image: '/user_friendly_interface_new.jpg',
+            desc: t('Refining the visual clarity of AI-driven insights through modern design systems.', '通过现代设计系统优化 AI 驱动洞察的视觉清晰度。')
         }
     ];
 
@@ -1805,23 +1847,102 @@ const AILabPage = () => {
             {/* Project Library */}
             <section className="mb-24">
                 <h3 className="text-3xl font-bold mb-8 font-display text-corporate-blue flex items-center gap-3">
-                    <Laptop size={28} /> {t("Project Library", "AI 作品库")}
+                    <Laptop size={28} /> {t("Explore AI Solutions", "探索 AI 解决方案")}
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {projects.map((proj, idx) => (
-                        <div key={idx} className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 hover:shadow-xl transition-shadow relative overflow-hidden group">
-                            <div className="absolute top-0 right-0 p-4">
-                                <span className={`text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full ${proj.status === t('Completed', '已完成') ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'}`}>
-                                   {proj.status}
-                                </span>
+                        <div key={idx} className="bg-white shadow-sm border border-gray-100 flex flex-col group hover:shadow-xl transition-all">
+                            <div className="w-full h-48 bg-gray-100 overflow-hidden relative">
+                                <img src={proj.image} alt={proj.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                             </div>
-                            <h4 className="text-xl font-bold mb-3 mt-4">{proj.title}</h4>
-                            <p className="text-gray-600 mb-6 flex-grow">{proj.desc}</p>
-                            <a href={proj.link} className="text-sm font-bold text-corporate-blue flex items-center gap-2 group-hover:gap-3 transition-all">
-                                {t("View Details", "了解更多")} <ArrowRight size={16} />
-                            </a>
+                            <div className="p-8 flex flex-col flex-grow">
+                                <h4 className="text-2xl font-bold mb-6">{proj.title}</h4>
+                                <ul className="space-y-4 mb-10 flex-grow">
+                                    {proj.features.map((feat: string, i: number) => (
+                                        <li key={i} className="text-gray-800 text-[15px] flex items-start gap-3">
+                                            <span className="font-bold shrink-0 mt-0.5 text-lg leading-none">{'>'}</span> 
+                                            <span className="leading-relaxed">{feat}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                                <a href="#" className="text-sm font-bold text-green-700 flex items-center gap-1 hover:gap-2 transition-all mt-auto w-fit">
+                                    {proj.linkText} <span className="text-lg leading-none shrink-0 mb-0.5">{'>'}</span>
+                                </a>
+                            </div>
                         </div>
                     ))}
+                </div>
+            </section>
+
+            {/* Latest Progress Tracker */}
+            <section className="mb-24">
+                <div className="flex flex-col lg:flex-row gap-12">
+                    {/* Updates Table */}
+                    <div className="flex-grow lg:w-3/5">
+                        <div className="flex items-center justify-between mb-8">
+                            <h3 className="text-4xl font-bold font-display">{t("Latest Progress", "最新开发动态")}</h3>
+                            <div className="relative hidden sm:block">
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+                                <input 
+                                    type="text" 
+                                    placeholder={t("Search updates...", "搜索动态...")} 
+                                    className="pl-10 pr-4 py-2 bg-gray-50 border border-gray-100 rounded-full text-sm outline-none focus:ring-2 focus:ring-corporate-blue/10 transition-all"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="border-t border-gray-100">
+                            <div className="grid grid-cols-12 py-4 px-2 text-[10px] font-bold uppercase tracking-wider text-gray-400">
+                                <div className="col-span-3">{t("Date", "日期")}</div>
+                                <div className="col-span-3">{t("Category", "类别")}</div>
+                                <div className="col-span-6">{t("Title", "动态标题")}</div>
+                            </div>
+                            <div className="space-y-1">
+                                {progressUpdates.map((update, idx) => (
+                                    <button 
+                                        key={idx}
+                                        onClick={() => setActiveUpdateIdx(idx)}
+                                        className={`w-full grid grid-cols-12 py-5 px-2 text-left transition-all border-t border-gray-50 group ${activeUpdateIdx === idx ? 'bg-blue-50/50' : 'hover:bg-gray-50'}`}
+                                    >
+                                        <div className="col-span-3 text-sm text-gray-500 font-medium">{update.date}</div>
+                                        <div className="col-span-3 text-sm text-gray-600">{update.category}</div>
+                                        <div className="col-span-6 text-sm font-bold text-gray-900 group-hover:text-corporate-blue transition-colors">
+                                            {update.title}
+                                        </div>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Preview Card */}
+                    <div className="lg:w-2/5">
+                        <div className="sticky top-24">
+                            <motion.div 
+                                key={activeUpdateIdx}
+                                initial={{ opacity: 0, x: 20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                className="bg-white rounded-[2rem] border border-gray-100 shadow-xl overflow-hidden"
+                            >
+                                <div className="aspect-square bg-gray-50 overflow-hidden">
+                                    <img 
+                                        src={progressUpdates[activeUpdateIdx].image} 
+                                        alt={progressUpdates[activeUpdateIdx].title}
+                                        className="w-full h-full object-cover"
+                                    />
+                                </div>
+                                <div className="p-8 bg-white">
+                                    <div className="text-[10px] font-bold uppercase tracking-widest text-corporate-blue mb-2">
+                                        {progressUpdates[activeUpdateIdx].category}
+                                    </div>
+                                    <h4 className="text-xl font-bold mb-4">{progressUpdates[activeUpdateIdx].title}</h4>
+                                    <p className="text-gray-600 text-sm leading-relaxed">
+                                        {progressUpdates[activeUpdateIdx].desc}
+                                    </p>
+                                </div>
+                            </motion.div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
@@ -1841,10 +1962,10 @@ const AILabPage = () => {
                 </div>
             </section>
 
-            {/* AI Thought Crowdsourcing */}
+            {/* Submit AI Ideas (Renamed from Crowdsourcing) */}
             <section className="mb-24">
                 <h3 className="text-3xl font-bold mb-8 font-display text-corporate-blue flex items-center gap-3">
-                    <MessageSquare size={28} /> {t("Idea Crowdsourcing", "AI 想法公筹")}
+                    <MessageSquare size={28} /> {t("Submit AI Ideas", "提交 AI 想法")}
                 </h3>
                 <p className="text-gray-600 mb-10 text-lg">
                     {t("Have an interesting idea for an AI application? Submit it below! I will select the most fascinating concepts to build and implement. Ideas marked with 💡 are currently in my pipeline.", "你对AI应用有什么有趣的想法吗？在下方提出，我会挑选最吸引人的概念进行开发与实现！标有 💡 的想法已加入我的开发计划中。")}
