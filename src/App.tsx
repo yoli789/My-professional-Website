@@ -2196,12 +2196,14 @@ const AILabPage = () => {
                                             <div>
                                                 <div className="flex items-center gap-3 mb-2">
                                                     {(hoveredIdea || activeIdea).willImplement && <span className="text-xl">💡</span>}
-                                                    <h4 className="text-2xl font-bold text-gray-900">
-                                                        {t((hoveredIdea || activeIdea).title, (hoveredIdea || activeIdea).titleCn || (hoveredIdea || activeIdea).title)}
+                                                    <h4 className="text-2xl font-bold text-slate-900 leading-tight">
+                                                        {lang === 'EN' 
+                                                            ? (hoveredIdea || activeIdea).titleEn || (hoveredIdea || activeIdea).title 
+                                                            : (hoveredIdea || activeIdea).titleCn || (hoveredIdea || activeIdea).title}
                                                     </h4>
                                                 </div>
                                                 <div className="text-xs font-bold uppercase tracking-widest text-gray-400">
-                                                    {t("Submitted by:", "提交者：")} <span className="text-gray-700">{(hoveredIdea || activeIdea).author}</span> • {(hoveredIdea || activeIdea).difficulty}
+                                                    {t("Submitted by:", "提交者：")} <span className="text-gray-700">{(hoveredIdea || activeIdea).author}</span> • {t((hoveredIdea || activeIdea).difficulty, (hoveredIdea || activeIdea).difficulty === 'Easy' ? '容易' : (hoveredIdea || activeIdea).difficulty === 'Medium' ? '中等' : '困难')}
                                                 </div>
                                             </div>
                                             
@@ -2228,7 +2230,9 @@ const AILabPage = () => {
                                             </div>
                                         </div>
                                         <p className="text-gray-600 leading-relaxed text-lg">
-                                            {t((hoveredIdea || activeIdea).desc, (hoveredIdea || activeIdea).descCn || (hoveredIdea || activeIdea).desc)}
+                                            {lang === 'EN' 
+                                                ? (hoveredIdea || activeIdea).descEn || (hoveredIdea || activeIdea).desc 
+                                                : (hoveredIdea || activeIdea).descCn || (hoveredIdea || activeIdea).desc}
                                         </p>
                                     </motion.div>
                                 ) : (
