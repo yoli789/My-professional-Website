@@ -1843,36 +1843,18 @@ const AILabPage = () => {
     ];
 
     const reflectionsData = [
-        { 
-            title: 'AI Supplier Negotiations', 
-            date: 'Case Study: Walmart', 
-            link: 'https://hbr.org/2022/11/how-walmart-uses-ai-to-negotiate-better-deals' 
-        },
-        { 
-            title: 'Procurement Policy Guide', 
-            date: 'Policy: FairNow AI', 
-            link: 'https://www.fairnow.ai/resources/ai-procurement-policy-guide' 
-        },
-        { 
-            title: 'Government AI Playbook', 
-            date: 'Playbook: Microsoft', 
-            link: 'https://news.microsoft.com/wp-content/uploads/prod/sites/66/2024/02/Microsoft-AI-Procurement-Playbook.pdf' 
-        },
-        { 
-            title: '101 AI Use Cases', 
-            date: 'White Paper: GEP', 
-            link: 'https://www.gep.com/knowledge-bank/white-papers/101-top-ai-use-cases-in-procurement' 
-        },
-        { 
-            title: 'Buying AI Responsibly', 
-            date: 'Toolbox: Open Contracting', 
-            link: 'https://www.open-contracting.org/resources/buying-ai-a-practical-guide/' 
-        },
-        { 
-            title: 'Digital Sourcing 2025', 
-            date: 'Trends: GEP', 
-            link: 'https://www.gep.com/strategy/digital-transformation-in-procurement' 
-        }
+        { title: 'AI Supplier Negotiations', date: 'Case Study: Walmart', link: 'https://hbr.org/2022/11/how-walmart-uses-ai-to-negotiate-better-deals' },
+        { title: 'Procurement Policy Guide', date: 'Policy: FairNow AI', link: 'https://www.fairnow.ai/resources/ai-procurement-policy-guide' },
+        { title: 'Government AI Playbook', date: 'Playbook: Microsoft', link: 'https://news.microsoft.com/wp-content/uploads/prod/sites/66/2024/02/Microsoft-AI-Procurement-Playbook.pdf' },
+        { title: '101 AI Use Cases', date: 'White Paper: GEP', link: 'https://www.gep.com/knowledge-bank/white-papers/101-top-ai-use-cases-in-procurement' },
+        { title: 'Buying AI Responsibly', date: 'Toolbox: Open Contracting', link: 'https://www.open-contracting.org/resources/buying-ai-a-practical-guide/' },
+        { title: 'Digital Sourcing 2025', date: 'Trends: GEP', link: 'https://www.gep.com/strategy/digital-transformation-in-procurement' },
+        { title: 'GenAI for Procurement', date: 'Insights: IBM', link: 'https://www.ibm.com/downloads/cas/AQY7NPOO' },
+        { title: 'Economic Impact of AI', date: 'Report: McKinsey', link: 'https://www.mckinsey.com/capabilities/mckinsey-digital/our-insights/the-economic-potential-of-generative-ai' },
+        { title: 'AI-Driven Sourcing', date: 'Strategy: Deloitte', link: 'https://www2.deloitte.com/us/en/pages/operations/articles/ai-in-procurement.html' },
+        { title: 'AI Risk Management', date: 'Framework: NIST', link: 'https://www.nist.gov/itl/ai-risk-management-framework' },
+        { title: 'Procurement Toolkit', date: 'Guide: WEF', link: 'https://www.weforum.org/publications/ai-procurement-in-a-box' },
+        { title: 'SCM AI Insights', date: 'Blog: Amazon AWS', link: 'https://aws.amazon.com/blogs/supply-chain/generative-ai-in-supply-chain-management/' }
     ];
 
     useEffect(() => {
@@ -2034,7 +2016,7 @@ const AILabPage = () => {
                     {/* Updates Table - 2/3 Width */}
                     <div className="lg:w-2/3">
                         <div className="flex items-center justify-between mb-8">
-                            <h3 className="text-4xl font-bold font-display">{t("Latest Progress", "最新开发动态")}</h3>
+                            <h3 className="text-xl font-bold font-display">{t("Latest Progress", "最新开发动态")}</h3>
                             <div className="relative hidden sm:block">
                                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
                                 <input 
@@ -2116,7 +2098,7 @@ const AILabPage = () => {
                     </div>
 
                     {/* Right Side: Article Cards Grid */}
-                    <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                         {reflectionsData.map((item, idx) => (
                             <motion.a
                                 key={idx}
@@ -2126,24 +2108,24 @@ const AILabPage = () => {
                                 initial={{ opacity: 0, y: 20 }}
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
-                                transition={{ delay: idx * 0.1 }}
-                                whileHover={{ y: -8, shadow: "0 25px 50px -12px rgba(0, 59, 255, 0.12)" }}
-                                className="group bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm transition-all flex flex-col justify-between h-48 relative overflow-hidden"
+                                transition={{ delay: idx * 0.05 }}
+                                whileHover={{ y: -6, shadow: "0 20px 40px -10px rgba(0, 59, 255, 0.1)" }}
+                                className="group bg-white p-6 rounded-3xl border border-gray-100 shadow-sm transition-all flex flex-col justify-between h-44 relative overflow-hidden"
                             >
-                                <div className="flex justify-between items-start gap-4">
-                                    <h4 className="text-2xl font-bold text-slate-900 leading-tight group-hover:text-blue-600 transition-colors">
+                                <div className="flex justify-between items-start gap-3">
+                                    <h4 className="text-lg font-bold text-slate-900 leading-tight group-hover:text-blue-600 transition-colors line-clamp-2">
                                         {item.title}
                                     </h4>
-                                    <div className="bg-blue-50/50 p-2 rounded-xl text-blue-600/40 group-hover:bg-blue-600 group-hover:text-white transition-all transform group-hover:rotate-45">
-                                        <ExternalLink size={20} />
+                                    <div className="bg-blue-50/50 p-1.5 rounded-lg text-blue-600/40 group-hover:bg-blue-600 group-hover:text-white transition-all transform group-hover:rotate-45 shrink-0">
+                                        <ExternalLink size={16} />
                                     </div>
                                 </div>
-                                <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mt-auto">
+                                <div className="text-[9px] font-bold uppercase tracking-widest text-slate-400 mt-auto">
                                     {item.date}
                                 </div>
                                 
                                 {/* Decorator hover glow */}
-                                <div className="absolute -bottom-16 -right-16 w-32 h-32 bg-blue-50/50 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                                <div className="absolute -bottom-12 -right-12 w-24 h-24 bg-blue-50/50 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                             </motion.a>
                         ))}
                     </div>
