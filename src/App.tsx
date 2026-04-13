@@ -2110,14 +2110,14 @@ const AILabPage = () => {
                                 viewport={{ once: true }}
                                 transition={{ delay: idx * 0.05 }}
                                 whileHover={{ y: -6, shadow: "0 20px 40px -10px rgba(0, 59, 255, 0.1)" }}
-                                className="group bg-white p-6 rounded-3xl border border-gray-100 shadow-sm transition-all flex flex-col justify-between h-44 relative overflow-hidden"
+                                className="group bg-white p-6 rounded-3xl border border-gray-100 shadow-sm transition-all flex flex-col justify-between min-h-[10rem] h-full relative overflow-hidden"
                             >
                                 <div className="flex justify-between items-start gap-3">
-                                    <h4 className="text-lg font-bold text-slate-900 leading-tight group-hover:text-blue-600 transition-colors line-clamp-2">
+                                    <h4 className="text-base font-bold text-slate-900 leading-tight group-hover:text-blue-600 transition-colors">
                                         {item.title}
                                     </h4>
                                     <div className="bg-blue-50/50 p-1.5 rounded-lg text-blue-600/40 group-hover:bg-blue-600 group-hover:text-white transition-all transform group-hover:rotate-45 shrink-0">
-                                        <ExternalLink size={16} />
+                                        <ExternalLink size={14} />
                                     </div>
                                 </div>
                                 <div className="text-[9px] font-bold uppercase tracking-widest text-slate-400 mt-auto">
