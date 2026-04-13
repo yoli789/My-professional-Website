@@ -1970,7 +1970,7 @@ const AILabPage = () => {
             features: [
                 t('Solving connectivity-related challenges bridging corporate environments and the real world.', '解决公司和现实世界的连接型问题。')
             ],
-            image: '/ai_spend_analytics.png',
+            image: '/development_project_cover.jpg',
             linkText: t('Coming Soon', '即将发布'),
             link: '#'
         },
