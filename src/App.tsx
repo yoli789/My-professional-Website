@@ -59,6 +59,7 @@ import {
     BarChart2,
     Mail,
     Search,
+    Sparkles,
     ThumbsUp,
     ThumbsDown
 } from 'lucide-react';
@@ -103,19 +104,19 @@ const Navbar = () => {
         { name: t('Technical Skills', '技术能力'), href: '/#skills' },
         { 
             name: t('AI Lab', 'AI 实验室'), 
-            href: '/#ailab',
             dropdownItems: [
-                { name: t('The latest AI Project', '最新 AI 项目'), href: '/ai-lab' },
-                { name: t('AI thoughts', 'AI 随想'), href: '/ai-lab' },
-                { name: t('Find a New idea', '发现新灵感'), href: '/ai-lab' }
+                { name: t('The latest AI Project', '最新 AI 项目'), href: '/ai-lab#explore-ai-solutions' },
+                { name: t('AI thoughts', 'AI 随想'), href: '/ai-lab#share-ai-thoughts' },
+                { name: t('Find a New idea', '发现新灵感'), href: '/ai-lab#submit-ai-ideas' }
             ]
         },
         { name: t('Contact', '总览与联系'), href: '/#contact' },
     ];
 
     const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-        if (href.startsWith('/#')) {
-            const id = href.substring(2);
+        const url = new URL(href, window.location.origin);
+        if (url.pathname === window.location.pathname && url.hash) {
+            const id = url.hash.substring(1);
             const element = document.getElementById(id);
             if (element) {
                 e.preventDefault();
@@ -1778,7 +1779,7 @@ const IdeaScatterChart = ({ ideas, onPointClick, onPointHover, activeIdeaId, hov
                                     cx={getX(idea.votes)} 
                                     cy={getY(idea.difficulty)} 
                                     r={isActive ? 12 : isHovered ? 10 : 7} 
-                                    className={`${isActive ? 'fill-corporate-blue' : 'fill-blue-400/60'} transition-all`}
+                                    className={`${isActive ? 'fill-orange-500' : 'fill-gray-300'} transition-all`}
                                     initial={false}
                                     animate={{ r: isActive ? 12 : isHovered ? 10 : 7 }}
                                 />
@@ -1787,7 +1788,7 @@ const IdeaScatterChart = ({ ideas, onPointClick, onPointHover, activeIdeaId, hov
                                         cx={getX(idea.votes)} 
                                         cy={getY(idea.difficulty)} 
                                         r={18} 
-                                        className="fill-none stroke-corporate-blue/30"
+                                        className="fill-none stroke-orange-500/30"
                                         initial={{ scale: 0.8, opacity: 0 }}
                                         animate={{ scale: 1.2, opacity: 1 }}
                                         transition={{ repeat: Infinity, duration: 1.5 }}
@@ -1803,7 +1804,7 @@ const IdeaScatterChart = ({ ideas, onPointClick, onPointHover, activeIdeaId, hov
 };
 
 const AILabPage = () => {
-    const { t } = useLanguage();
+    const { lang, t } = useLanguage();
     const [ideas, setIdeas] = useState<any[]>([]);
     const [newIdeaTitle, setNewIdeaTitle] = useState('');
     const [newIdeaDesc, setNewIdeaDesc] = useState('');
@@ -1821,14 +1822,57 @@ const AILabPage = () => {
         return stored ? JSON.parse(stored) : [];
     });
 
-    useEffect(() => {
-        localStorage.setItem('yuli_portfolio_voted_ideas', JSON.stringify(votedItems));
-    }, [votedItems]);
+    // Translation Utility
+    const autoTranslate = async (text: string, target: 'en' | 'zh' | 'ja' | 'ko' | 'fr' | 'de') => {
+        if (!text) return text;
+        try {
+            // Using MyMemory Public API for demo/portfolio purposes
+            const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=auto|${target}`);
+            const data = await res.json();
+            return data.responseData?.translatedText || text;
+        } catch (e) {
+            console.error('Translation failed:', e);
+            return text;
+        }
+    };
 
     const mockIdeas = [
-        { id: 1, title: 'Personalized Learning Agent', titleCn: '个性化学习助手', desc: 'An AI companion that adapts to your learning pace and curates customized content.', descCn: '适应你学习节奏的人工智能伴侣，并策划定制内容。', author: 'Anna', votes: 15, willImplement: false, difficulty: 'Medium', created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString() },
-        { id: 2, title: 'Intelligent Spend Categorizer', titleCn: '智能支出分类器', desc: 'Automatically categorizes indirect spend using LLMs for instant clarity.', descCn: '使用大语言模型对间接支出进行自动分类，即时呈现清晰数据。', author: 'Mark', votes: 32, willImplement: true, difficulty: 'Difficult', created_at: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString() },
-        { id: 3, title: 'Creative Content Generator', titleCn: '创意内容生成引擎', desc: 'Generate marketing copy and visuals simultaneously.', descCn: '利用AI同时生成营销文案和相关视觉效果的系统。', author: 'Sophia', votes: 8, willImplement: false, difficulty: 'Easy', created_at: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000).toISOString() }
+        { id: 1, titleEn: 'Personalized Learning Agent', titleCn: '个性化学习助手', descEn: 'An AI companion that adapts to your learning pace and curates customized content.', descCn: '适应你学习节奏的人工智能伴侣，并策划定制内容趋势。', author: 'Anna', votes: 15, difficulty: 'Medium', created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString() },
+        { id: 2, titleEn: 'Intelligent Spend Categorizer', titleCn: '智能支出分类器', descEn: 'Automatically categorizes indirect spend using LLMs for instant clarity.', descCn: '使用大语言模型对间接支出进行自动分类，即时呈现清晰数据。', author: 'Mark', votes: 32, difficulty: 'Difficult', created_at: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString() },
+        { id: 3, titleEn: 'Creative Content Generator', titleCn: '创意内容生成引擎', descEn: 'Generate marketing copy and visuals simultaneously.', descCn: '利用AI同时生成营销文案和相关视觉效果的系统。', author: 'Sophia', votes: 8, difficulty: 'Easy', created_at: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000).toISOString() }
+    ];
+
+    const reflectionsData = [
+        { 
+            title: 'AI Supplier Negotiations', 
+            date: 'Case Study: Walmart', 
+            link: 'https://hbr.org/2022/11/how-walmart-uses-ai-to-negotiate-better-deals' 
+        },
+        { 
+            title: 'Procurement Policy Guide', 
+            date: 'Policy: FairNow AI', 
+            link: 'https://www.fairnow.ai/resources/ai-procurement-policy-guide' 
+        },
+        { 
+            title: 'Government AI Playbook', 
+            date: 'Playbook: Microsoft', 
+            link: 'https://news.microsoft.com/wp-content/uploads/prod/sites/66/2024/02/Microsoft-AI-Procurement-Playbook.pdf' 
+        },
+        { 
+            title: '101 AI Use Cases', 
+            date: 'White Paper: GEP', 
+            link: 'https://www.gep.com/knowledge-bank/white-papers/101-top-ai-use-cases-in-procurement' 
+        },
+        { 
+            title: 'Buying AI Responsibly', 
+            date: 'Toolbox: Open Contracting', 
+            link: 'https://www.open-contracting.org/resources/buying-ai-a-practical-guide/' 
+        },
+        { 
+            title: 'Digital Sourcing 2025', 
+            date: 'Trends: GEP', 
+            link: 'https://www.gep.com/strategy/digital-transformation-in-procurement' 
+        }
     ];
 
     useEffect(() => {
@@ -1840,7 +1884,7 @@ const AILabPage = () => {
             const { data, error } = await supabase.from('ideas').select('*').order('votes', { ascending: false });
             if (error) throw error;
             if (data && data.length > 0) {
-                setIdeas(data);
+                setIdeas(data.filter((idea: any) => (idea.titleEn || idea.title) !== 'Testing'));
             } else {
                 setIdeas(mockIdeas);
             }
@@ -1876,19 +1920,24 @@ const AILabPage = () => {
         e.preventDefault();
         if(!newIdeaTitle || !newIdeaDesc) return;
         setIsSubmitting(true);
-        const newIdea = {
-            title: newIdeaTitle,
-            titleCn: newIdeaTitle, 
-            desc: newIdeaDesc,
-            descCn: newIdeaDesc,
-            author: newIdeaAuthor || (t('Anonymous', '匿名') as string),
-            votes: 0,
-            willImplement: false,
-            difficulty: newIdeaDifficulty,
-            created_at: new Date().toISOString()
-        };
         
         try {
+            // Perform translations based on selected logic
+            const targetLang = lang === 'EN' ? 'zh' : 'en';
+            const translatedTitle = await autoTranslate(newIdeaTitle, targetLang);
+            const translatedDesc = await autoTranslate(newIdeaDesc, targetLang);
+
+            const newIdea = {
+                titleEn: lang === 'EN' ? newIdeaTitle : translatedTitle,
+                titleCn: lang === 'CN' ? newIdeaTitle : translatedTitle, 
+                descEn: lang === 'EN' ? newIdeaDesc : translatedDesc,
+                descCn: lang === 'CN' ? newIdeaDesc : translatedDesc,
+                author: newIdeaAuthor || (t('Anonymous', '匿名') as string),
+                votes: 0,
+                difficulty: newIdeaDifficulty,
+                created_at: new Date().toISOString()
+            };
+
             const tempId = Date.now();
             setIdeas([{ ...newIdea, id: tempId }, ...ideas]);
             setNewIdeaTitle('');
@@ -1899,7 +1948,7 @@ const AILabPage = () => {
             const { error } = await supabase.from('ideas').insert([newIdea]);
             if (error) throw error;
         } catch (e) {
-            console.error('Failed to submit to Supabase:', e);
+            console.error('Failed to submit idea:', e);
         } finally {
             setIsSubmitting(false);
         }
@@ -1950,7 +1999,7 @@ const AILabPage = () => {
             subtitle={t("An AI Sandbox for Concept Validation and Collaborative Innovation.", "一个用于概念验证与协作创新的 AI 沙盒。")}
         >
             {/* Project Library */}
-            <section className="mb-24">
+            <section id="explore-ai-solutions" className="mb-24">
                 <h3 className="text-3xl font-bold mb-8 font-display text-corporate-blue flex items-center gap-3">
                     <Laptop size={28} /> {t("Explore AI Solutions", "探索 AI 解决方案")}
                 </h3>
@@ -2052,27 +2101,60 @@ const AILabPage = () => {
                 </div>
             </section>
 
-            {/* AI Reflections */}
-            <section className="mb-24">
-                <div className="bg-gradient-to-br from-slate-900 to-blue-900 text-white p-12 rounded-[2.5rem] shadow-2xl relative overflow-hidden">
-                    <div className="absolute -top-24 -right-24 w-64 h-64 bg-blue-500/30 rounded-full blur-[80px]" />
-                    <div className="relative z-10">
-                        <h3 className="text-2xl font-bold mb-8 font-display flex items-center gap-3 text-blue-200">
-                            <Bot size={28} /> {t("AI Reflections", "AI 感悟与洞见")}
-                        </h3>
-                        <blockquote className="text-2xl md:text-3xl font-serif italic font-light leading-relaxed mb-6">
-                            "{t('As artificial intelligence evolves from an operational tool to a strategic partner, its potential in supply chain and procurement isn’t just in cost reduction—it is in proactive risk management.', '随着人工智能从运营工具演变为战略合作伙伴，其在供应链和采购领域的潜力不仅在于降低成本，更在于前瞻性的风险管理。')}"
-                        </blockquote>
-                        <p className="text-blue-300 tracking-widest uppercase text-xs font-bold">— Yuli Zhang</p>
+            {/* AI Reflections Section */}
+            <section id="share-ai-thoughts" className="mb-32">
+                <h3 className="text-3xl font-bold mb-8 font-display text-corporate-blue flex items-center gap-3">
+                    <Sparkles size={28} /> {t("Share AI thoughts", "分享 AI 想法")}
+                </h3>
+                
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start bg-gray-50/50 p-12 rounded-[3.5rem] border border-gray-100">
+                    {/* Left Side: Intro */}
+                    <div className="lg:col-span-4 space-y-8">
+                        <p className="text-gray-500 text-lg font-medium leading-relaxed">
+                            {t("Documenting the evolution of intelligence and its impact on procurement strategy.", "记录智能进化及其对采购战略的影响。")}
+                        </p>
+                    </div>
+
+                    {/* Right Side: Article Cards Grid */}
+                    <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+                        {reflectionsData.map((item, idx) => (
+                            <motion.a
+                                key={idx}
+                                href={item.link}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: idx * 0.1 }}
+                                whileHover={{ y: -8, shadow: "0 25px 50px -12px rgba(0, 59, 255, 0.12)" }}
+                                className="group bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm transition-all flex flex-col justify-between h-48 relative overflow-hidden"
+                            >
+                                <div className="flex justify-between items-start gap-4">
+                                    <h4 className="text-2xl font-bold text-slate-900 leading-tight group-hover:text-blue-600 transition-colors">
+                                        {item.title}
+                                    </h4>
+                                    <div className="bg-blue-50/50 p-2 rounded-xl text-blue-600/40 group-hover:bg-blue-600 group-hover:text-white transition-all transform group-hover:rotate-45">
+                                        <ExternalLink size={20} />
+                                    </div>
+                                </div>
+                                <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mt-auto">
+                                    {item.date}
+                                </div>
+                                
+                                {/* Decorator hover glow */}
+                                <div className="absolute -bottom-16 -right-16 w-32 h-32 bg-blue-50/50 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                            </motion.a>
+                        ))}
                     </div>
                 </div>
             </section>
 
             {/* Submit AI Ideas - Quadrant Chart Re-design */}
-            <section className="mb-24">
+            <section id="submit-ai-ideas" className="mb-24">
                 <div className="flex flex-col md:flex-row items-center justify-between mb-8">
                     <h3 className="text-3xl font-bold font-display text-corporate-blue flex items-center gap-3">
-                        <MessageSquare size={28} /> {t("Submit AI Ideas", "提交 AI 想法")}
+                        <MessageSquare size={28} /> {t("Find a New AI Idea", "发现 AI 灵感")}
                     </h3>
                     
                     {/* Time Filter */}
@@ -2090,6 +2172,10 @@ const AILabPage = () => {
                         </select>
                     </div>
                 </div>
+
+                <p className="text-gray-400 text-sm mb-8">
+                    {t("This section is for sharing any AI-related ideas; select ideas may be transformed into actual projects.", "这里是用于分享任何AI相关的想法，有机会该想法会被转化成实际项目。")}
+                </p>
 
                 <div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
                     {/* Left Column: Chart & Detail Box */}
