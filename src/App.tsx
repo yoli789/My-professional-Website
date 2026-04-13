@@ -1961,7 +1961,7 @@ const AILabPage = () => {
                 t('Transform digital professional experience into AI-centric presentation methods.', '将数字化职业经验转化为以 AI 技术为主的表现方式。'),
                 t('Tech Stack: Google AI Studio + VS Code + GitHub (Version Backup) + Vercel + Supabase + Mail Service (TBD).', '技术栈：Google AI Studio + VS Code + GitHub (版本备份) + Vercel + Supabase + 邮件发送服务 (TBD)。')
             ],
-            image: '/ai_contract_review.png',
+            image: '/ai_coding_website_cover.png',
             linkText: t('Get the access to this project', '获取项目访问权限'),
             link: 'https://zhangyuli.top'
         },
