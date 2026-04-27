@@ -1972,6 +1972,13 @@ const AILabPage = () => {
             title: t('Bridge connecting companies and the real world', '公司和现实世界的连接桥梁'),
             image: '/progress_update_2.png',
             desc: t('Concept Generating...', '概念生成中...')
+        },
+        {
+            date: '2026.07',
+            category: t('Skills', '技能'),
+            title: t('AI Skill Thinking: Mapping AI Capabilities to Procurement Process Pain Points', '针对采购流程痛点的 AI 技能思考'),
+            image: '/ai_skills_procurement.png',
+            desc: t('A structured reflection on which AI skills—prompt engineering, agent orchestration, RAG, and fine-tuning—best address core procurement pain points such as fragmented supplier data, manual contract review, and spend visibility gaps.', '系统梳理哪些AI技能（提示工程、智能体编排、RAG检索增强、模型微调）最能精准解决采购核心痛点：供应商数据碎片化、合同人工审阅效率低、支出可见性不足等。')
         }
     ];
 
